@@ -1,0 +1,593 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-02-23 18:21+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: api/v1/assistant/serializer.py:135
+msgid "Unable to get the next question"
+msgstr ""
+
+#: api/v1/assistant/serializer.py:187
+msgid "This Conversation is not available"
+msgstr ""
+
+#: api/v1/assistant/serializer.py:194
+msgid "This prompt is not available"
+msgstr ""
+
+#: api/v1/assistant/views.py:81
+msgid "All your conversations has been deleted."
+msgstr ""
+
+#: api/v1/user/serializer.py:102
+msgid "Unable to fetch google info data"
+msgstr ""
+
+#: api/v1/user/serializer.py:109
+msgid "Google id is missing"
+msgstr ""
+
+#: api/v1/user/serializer.py:170
+msgid "Unable to fetch apple info data"
+msgstr ""
+
+#: api/v1/user/serializer.py:177
+msgid "Apple id is missing"
+msgstr ""
+
+#: api/v1/user/views.py:85
+msgid "Your account has been deleted, you will automatically logout"
+msgstr ""
+
+#: api/v1/user/views.py:94
+msgid "Successfully logged out."
+msgstr ""
+
+#: core/models/app.py:9 core/models/conversation.py:25
+#: core/models/payment.py:14 core/models/prompt.py:8 core/models/prompt.py:44
+#: core/models/prompt.py:74
+msgid "Title"
+msgstr ""
+
+#: core/models/app.py:16
+msgid "Image"
+msgstr ""
+
+#: core/models/app.py:19 core/models/balance.py:28
+#: core/models/conversation.py:34 core/models/conversation.py:89
+#: core/models/getstarted.py:23 core/models/getstarted.py:46
+#: core/models/getstarted.py:83 core/models/payment.py:27
+#: core/models/prompt.py:11 core/models/prompt.py:47 core/models/prompt.py:100
+#: core/models/settings.py:15 core/models/twitter.py:18
+#: core/models/twitter.py:54 core/models/user.py:41 core/models/user.py:106
+msgid "Created"
+msgstr ""
+
+#: core/models/app.py:21 core/models/balance.py:30
+#: core/models/conversation.py:36 core/models/conversation.py:91
+#: core/models/getstarted.py:25 core/models/getstarted.py:48
+#: core/models/getstarted.py:85 core/models/payment.py:29
+#: core/models/prompt.py:13 core/models/prompt.py:49 core/models/prompt.py:102
+#: core/models/settings.py:17 core/models/twitter.py:20
+#: core/models/twitter.py:56 core/models/user.py:43 core/models/user.py:108
+msgid "Updated"
+msgstr ""
+
+#: core/models/app.py:24
+msgid "On Boarding"
+msgstr ""
+
+#: core/models/app.py:25
+msgid "On Boardings"
+msgstr ""
+
+#: core/models/balance.py:14 core/models/conversation.py:14
+#: core/models/twitter.py:15 core/models/user.py:14 core/models/user.py:79
+msgid "User"
+msgstr ""
+
+#: core/models/balance.py:17
+msgid "Credit"
+msgstr ""
+
+#: core/models/balance.py:18
+msgid "Debit"
+msgstr ""
+
+#: core/models/balance.py:21
+msgid "Type"
+msgstr ""
+
+#: core/models/balance.py:24
+msgid "Amount"
+msgstr ""
+
+#: core/models/balance.py:26
+msgid "Notes"
+msgstr ""
+
+#: core/models/balance.py:33
+msgid "Balance Sheet"
+msgstr ""
+
+#: core/models/balance.py:34
+msgid "Balance Sheets"
+msgstr ""
+
+#: core/models/conversation.py:22 core/models/prompt.py:105
+#: core/models/twitter.py:45 gremlin/entity.py:51
+msgid "Prompt"
+msgstr ""
+
+#: core/models/conversation.py:28 core/models/conversation.py:86
+msgid "Is deleted"
+msgstr ""
+
+#: core/models/conversation.py:31
+msgid "Chat history length"
+msgstr ""
+
+#: core/models/conversation.py:39 core/models/conversation.py:69
+msgid "Conversation"
+msgstr ""
+
+#: core/models/conversation.py:40
+msgid "Conversations"
+msgstr ""
+
+#: core/models/conversation.py:71 core/models/getstarted.py:41
+#: core/models/getstarted.py:79 gremlin/entity.py:45
+msgid "Question"
+msgstr ""
+
+#: core/models/conversation.py:72 core/models/getstarted.py:81
+#: gremlin/entity.py:48
+msgid "Answer"
+msgstr ""
+
+#: core/models/conversation.py:74 core/models/prompt.py:94
+msgid "Hidden prompt"
+msgstr ""
+
+#: core/models/conversation.py:77
+msgid "Prompt tokens usage"
+msgstr ""
+
+#: core/models/conversation.py:80
+msgid "Completion tokens usage"
+msgstr ""
+
+#: core/models/conversation.py:83
+msgid "Total token usage"
+msgstr ""
+
+#: core/models/conversation.py:94
+msgid "Message"
+msgstr ""
+
+#: core/models/conversation.py:95
+msgid "Messages"
+msgstr ""
+
+#: core/models/getstarted.py:14 core/models/getstarted.py:66
+#: core/models/user.py:46
+msgid "Device"
+msgstr ""
+
+#: core/models/getstarted.py:17
+msgid "Nickname"
+msgstr ""
+
+#: core/models/getstarted.py:20
+msgid "Is complete"
+msgstr ""
+
+#: core/models/getstarted.py:28
+msgid "Get Started Bot"
+msgstr ""
+
+#: core/models/getstarted.py:29
+msgid "Get Started Bots"
+msgstr ""
+
+#: core/models/getstarted.py:43
+msgid "Is final question"
+msgstr ""
+
+#: core/models/getstarted.py:51
+msgid "Get Started Question"
+msgstr ""
+
+#: core/models/getstarted.py:52
+msgid "Get Started Questions"
+msgstr ""
+
+#: core/models/getstarted.py:88
+msgid "Get Started Answer"
+msgstr ""
+
+#: core/models/getstarted.py:89
+msgid "Get Started Answers"
+msgstr ""
+
+#: core/models/payment.py:16
+msgid "Words"
+msgstr ""
+
+#: core/models/payment.py:18
+msgid "Max request per hour"
+msgstr ""
+
+#: core/models/payment.py:21
+msgid "Bundle id"
+msgstr ""
+
+#: core/models/payment.py:24 core/models/prompt.py:97 core/models/user.py:103
+msgid "Is active"
+msgstr ""
+
+#: core/models/payment.py:32 core/models/user.py:88
+msgid "Plan"
+msgstr ""
+
+#: core/models/payment.py:33
+msgid "Plans"
+msgstr ""
+
+#: core/models/prompt.py:16 core/models/prompt.py:39
+msgid "Topic"
+msgstr ""
+
+#: core/models/prompt.py:17
+msgid "Topics"
+msgstr ""
+
+#: core/models/prompt.py:52 core/models/prompt.py:80
+msgid "Sub Topic"
+msgstr ""
+
+#: core/models/prompt.py:53
+msgid "Sub Topics"
+msgstr ""
+
+#: core/models/prompt.py:85
+msgid "Content"
+msgstr ""
+
+#: core/models/prompt.py:91
+msgid "Placeholder"
+msgstr ""
+
+#: core/models/prompt.py:106
+msgid "Prompts"
+msgstr ""
+
+#: core/models/settings.py:8
+msgid "Label"
+msgstr ""
+
+#: core/models/settings.py:11
+msgid "Key"
+msgstr ""
+
+#: core/models/settings.py:13
+msgid "Value"
+msgstr ""
+
+#: core/models/settings.py:20
+msgid "Settings"
+msgstr ""
+
+#: core/models/settings.py:21
+msgid "Setting"
+msgstr ""
+
+#: core/models/twitter.py:23 core/models/twitter.py:37
+msgid "Twitter Account"
+msgstr ""
+
+#: core/models/twitter.py:24
+msgid "Twitters Accounts"
+msgstr ""
+
+#: core/models/twitter.py:48
+msgid "Schedule Date"
+msgstr ""
+
+#: core/models/twitter.py:51
+msgid "Is tweeted"
+msgstr ""
+
+#: core/models/twitter.py:59
+msgid "Twitter AI"
+msgstr ""
+
+#: core/models/twitter.py:60
+msgid "Twitters AIS"
+msgstr ""
+
+#: core/models/user.py:17
+msgid "Device id"
+msgstr ""
+
+#: core/models/user.py:20
+msgid "Platform"
+msgstr ""
+
+#: core/models/user.py:23
+msgid "Language"
+msgstr ""
+
+#: core/models/user.py:26
+msgid "Sessions"
+msgstr ""
+
+#: core/models/user.py:29
+msgid "App version"
+msgstr ""
+
+#: core/models/user.py:32
+msgid "App build"
+msgstr ""
+
+#: core/models/user.py:35
+msgid "First Session"
+msgstr ""
+
+#: core/models/user.py:38
+msgid "Last active"
+msgstr ""
+
+#: core/models/user.py:47
+msgid "Devices"
+msgstr ""
+
+#: core/models/user.py:93
+msgid "Apple Transaction id"
+msgstr ""
+
+#: core/models/user.py:96
+msgid "Expire in"
+msgstr ""
+
+#: core/models/user.py:111
+msgid "User Plan"
+msgstr ""
+
+#: core/models/user.py:112
+msgid "Users Plans"
+msgstr ""
+
+#: gremlin/entity.py:6
+msgid "star"
+msgstr ""
+
+#: gremlin/entity.py:7
+msgid "comment"
+msgstr ""
+
+#: gremlin/entity.py:8
+msgid "status"
+msgstr ""
+
+#: gremlin/entity.py:9
+msgid "booking"
+msgstr ""
+
+#: gremlin/entity.py:10
+msgid "device id"
+msgstr ""
+
+#: gremlin/entity.py:11
+msgid "platform"
+msgstr ""
+
+#: gremlin/entity.py:12
+msgid "version"
+msgstr ""
+
+#: gremlin/entity.py:13
+msgid "payment method"
+msgstr ""
+
+#: gremlin/entity.py:14
+msgid "garden"
+msgstr ""
+
+#: gremlin/entity.py:15
+msgid "spot"
+msgstr ""
+
+#: gremlin/entity.py:16
+msgid "package price"
+msgstr ""
+
+#: gremlin/entity.py:17
+msgid "coupon"
+msgstr ""
+
+#: gremlin/entity.py:18
+msgid "package"
+msgstr ""
+
+#: gremlin/entity.py:19
+msgid "description"
+msgstr ""
+
+#: gremlin/entity.py:20
+msgid "auth"
+msgstr ""
+
+#: gremlin/entity.py:21
+msgid "documents"
+msgstr ""
+
+#: gremlin/entity.py:22
+msgid "images"
+msgstr ""
+
+#: gremlin/entity.py:23
+msgid "logo"
+msgstr ""
+
+#: gremlin/entity.py:24
+msgid "first name"
+msgstr ""
+
+#: gremlin/entity.py:25
+msgid "last name"
+msgstr ""
+
+#: gremlin/entity.py:26
+msgid "identity"
+msgstr ""
+
+#: gremlin/entity.py:27
+msgid "truck name"
+msgstr ""
+
+#: gremlin/entity.py:28
+msgid "category"
+msgstr ""
+
+#: gremlin/entity.py:29
+msgid "email address"
+msgstr ""
+
+#: gremlin/entity.py:30 gremlin/entity.py:34
+msgid "password"
+msgstr ""
+
+#: gremlin/entity.py:31
+msgid "country"
+msgstr ""
+
+#: gremlin/entity.py:32
+msgid "mobile number"
+msgstr ""
+
+#: gremlin/entity.py:33
+msgid "code"
+msgstr ""
+
+#: gremlin/entity.py:35
+msgid "confirm password"
+msgstr ""
+
+#: gremlin/entity.py:36
+msgid "non_field_errors"
+msgstr ""
+
+#: gremlin/entity.py:37
+msgid "Confirm new password"
+msgstr ""
+
+#: gremlin/entity.py:38
+msgid "New password"
+msgstr ""
+
+#: gremlin/entity.py:39
+msgid "Old password"
+msgstr ""
+
+#: gremlin/entity.py:40
+msgid "Request change password"
+msgstr ""
+
+#: gremlin/entity.py:41
+msgid "Is renew"
+msgstr ""
+
+#: gremlin/entity.py:42
+msgid "Error"
+msgstr ""
+
+#: gremlin/entity.py:43
+msgid "general"
+msgstr ""
+
+#: gremlin/entity.py:44
+msgid "Access token"
+msgstr ""
+
+#: gremlin/entity.py:46
+msgid "Receipt"
+msgstr ""
+
+#: gremlin/entity.py:47
+msgid "Question id"
+msgstr ""
+
+#: gremlin/entity.py:49
+msgid "Wizard Id"
+msgstr ""
+
+#: gremlin/entity.py:50
+msgid "Conversation Id"
+msgstr ""
+
+#: gremlin/entity.py:55 gremlin/entity.py:61
+msgid "is required"
+msgstr ""
+
+#: gremlin/entity.py:56
+msgid "can not be blank"
+msgstr ""
+
+#: gremlin/entity.py:57
+msgid "invalid"
+msgstr ""
+
+#: gremlin/entity.py:58
+msgid "Auth"
+msgstr ""
+
+#: gremlin/entity.py:59
+msgid "Min length"
+msgstr ""
+
+#: gremlin/entity.py:60
+msgid "No list found"
+msgstr ""
+
+#: gremlin/entity.py:90
+msgid "Unknown field error"
+msgstr ""
+
+#: gremlin/middleware.py:32
+msgid "Wrong Gremlin Key"
+msgstr ""
+
+#: gremlin/middleware.py:39
+msgid "Missing Gremlin Key"
+msgstr ""
+
+#: gremlin/middleware.py:104
+msgid "an unexpected error happened which might be temporary"
+msgstr ""
+
+#: gremlin/settings.py:109
+msgid "English"
+msgstr ""
+
+#: gremlin/urls.py:27 gremlin/urls.py:28
+msgid "Gremlin Control Panel"
+msgstr ""
+
+#: gremlin/urls.py:29
+msgid "Gremlin AI"
+msgstr ""

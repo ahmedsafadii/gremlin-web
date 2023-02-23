@@ -21,6 +21,8 @@ from django.conf.urls.i18n import i18n_patterns
 from django.conf import settings
 from gremlin.settings_dev import SECRET_ADMIN_URL, DEBUG
 from api.v1.app import urls as app
+from api.v1.user import urls as user
+from api.v1.assistant import urls as assistant
 
 admin.site.site_header = _("Gremlin Control Panel")
 admin.site.index_title = _("Gremlin Control Panel")
@@ -28,14 +30,13 @@ admin.site.site_title = _("Gremlin AI")
 
 urlpatterns = i18n_patterns(
     path(SECRET_ADMIN_URL + "/dashboard/", admin.site.urls),
-    # path("", include("core.urls")),
 )
 
 urlpatterns += [
     path("i18n/", include("django.conf.urls.i18n"), name="app"),
     path("api/v1/app/", include(app.urlpatterns)),
-    # path("api/v1/user/", include(user.urlpatterns)),
-    # path("api/v1/openai/", include(openai.urlpatterns)),
+    path("api/v1/user/", include(user.urlpatterns)),
+    path("api/v1/assistant/", include(assistant.urlpatterns)),
 ]
 
 if DEBUG:

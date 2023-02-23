@@ -44,16 +44,21 @@ class FieldsEntity:
         "accessToken": _("Access token"),
         "question": _("Question"),
         "receipt": _("Receipt"),
+        "questionId": _("Question id"),
+        "answer": _("Answer"),
+        "wizardId": _("Wizard Id"),
+        "conversationId": _("Conversation Id"),
+        "prompt": _("Prompt"),
     }
 
     codes = {
-        "required": _("is required."),
-        "blank": _("can not be blank."),
+        "required": _("is required"),
+        "blank": _("can not be blank"),
         "invalid": _("invalid"),
         "auth": _("Auth"),
         "min_length": _("Min length"),
         "not_a_list": _("No list found"),
-        "null": _("is required."),
+        "null": _("is required"),
     }
 
 

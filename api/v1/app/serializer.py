@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.models import Plan, OnBoarding
+from core.models import Plan, OnBoarding, SubTopic, Topic
 
 
 class OnBoardingSerializer(serializers.ModelSerializer):  # noqa
@@ -26,6 +26,21 @@ class ToolsSerializer(serializers.Serializer):  # noqa
             "onBoarding": OnBoardingSerializer(
                 context.get("onBoarding"), many=True
             ).data,
+            "topics": TopicSerializer(context.get("topics"), many=True).data,
         }
 
         return data
+
+
+class TopicSerializer(serializers.ModelSerializer):  # noqa
+    class Meta:
+        model = Topic
+        fields = ["id", "title"]
+
+
+class SubTopicSerializer(serializers.ModelSerializer):  # noqa
+    category = TopicSerializer(many=False, source="topic")
+
+    class Meta:
+        model = SubTopic
+        fields = ["id", "title", "category"]

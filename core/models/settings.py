@@ -10,9 +10,7 @@ class Setting(models.Model):
     key = models.CharField(
         max_length=255, blank=False, null=True, unique=True, verbose_name=_("Key")
     )
-    value = models.CharField(
-        max_length=255, blank=False, null=True, verbose_name=_("Value")
-    )
+    value = models.TextField(blank=False, null=True, verbose_name=_("Value"))
     created = models.DateTimeField(
         auto_now_add=True, null=True, verbose_name=_("Created")
     )

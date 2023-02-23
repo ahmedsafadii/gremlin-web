@@ -20,24 +20,6 @@ except ImportError:
     MiddlewareMixin = object
 
 
-class DebugToolbarMiddleware:
-    def __init__(self, get_response):
-        self.get_response = get_response
-
-    def __call__(self, request):
-        response = self.get_response(request)
-        if not hasattr(request, "_debug_toolbar"):
-            return response
-
-        debug_toolbar = request._debug_toolbar
-        headers = debug_toolbar.get_stats()
-
-        # Access the Debug Toolbar headers here
-        print(headers)
-
-        return response
-
-
 class CheckKeyMiddleware(MiddlewareMixin):
     def process_request(self, request):  # noqa
         if "/v1/" in request.META["PATH_INFO"]:
@@ -127,13 +109,7 @@ class CustomMiddleware(MiddlewareMixin):
 class CustomPagination(pagination.PageNumberPagination):
     def get_paginated_response(self, data):
         data = {
-            "links": {
-                "next": self.get_next_link() if self.get_next_link() else None,
-                "previous": self.get_previous_link()
-                if self.get_previous_link()
-                else None,
-            },
-            "count": self.page.paginator.count,
+            "next": True if self.get_next_link() else False,
             "results": data,
         }
 

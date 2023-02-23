@@ -13,6 +13,14 @@ class Conversation(models.Model):
         null=True,
         verbose_name=_("User"),
     )
+    prompt = models.ForeignKey(
+        "Prompt",
+        on_delete=models.RESTRICT,
+        related_name="conversations",
+        blank=True,
+        null=True,
+        verbose_name=_("Prompt"),
+    )
     title = models.CharField(
         max_length=255, blank=False, default="", verbose_name=_("Title")
     )
@@ -38,10 +46,11 @@ class Conversation(models.Model):
 @admin.register(Conversation)
 class ConversationAdmin(admin.ModelAdmin):
     search_fields = ["user__username", "title"]
-    autocomplete_fields = ["user"]
+    autocomplete_fields = ["user", "prompt"]
     list_display = [
         "id",
         "user",
+        "prompt",
         "title",
         "is_deleted",
         "history_length",
@@ -59,17 +68,20 @@ class Message(models.Model):
         null=True,
         verbose_name=_("Conversation"),
     )
-    prompt = models.ForeignKey(
-        "Prompt",
-        on_delete=models.RESTRICT,
-        related_name="messages",
-        blank=False,
-        null=True,
-        verbose_name=_("Prompt"),
-    )
     question = models.TextField(blank=False, null=True, verbose_name=_("Question"))
     answer = models.TextField(blank=True, null=True, verbose_name=_("Answer"))
-    token_cost = models.IntegerField(blank=False, verbose_name=_("Token cost"))
+    hidden_prompt = models.TextField(
+        blank=False, null=True, verbose_name=_("Hidden prompt")
+    )
+    prompt_tokens_usage = models.IntegerField(
+        blank=False, null=True, verbose_name=_("Prompt tokens usage")
+    )
+    completion_tokens = models.IntegerField(
+        blank=False, null=True, verbose_name=_("Completion tokens usage")
+    )
+    total_tokens = models.IntegerField(
+        blank=False, null=True, verbose_name=_("Total token usage")
+    )
     is_deleted = models.BooleanField(
         default=False, blank=False, verbose_name=_("Is deleted")
     )
@@ -79,8 +91,8 @@ class Message(models.Model):
     updated = models.DateTimeField(auto_now=True, null=True, verbose_name=_("Updated"))
 
     class Meta:
-        verbose_name = _("Conversation")
-        verbose_name_plural = _("Conversations")
+        verbose_name = _("Message")
+        verbose_name_plural = _("Messages")
 
     def __str__(self):
         return self.conversation.title
@@ -103,3 +115,20 @@ class Message(models.Model):
             TwitterAI.objects.filter(message_id=self.id).delete()
 
         super().save(force_insert, force_update, using, update_fields)
+
+
+@admin.register(Message)
+class MessageAdmin(admin.ModelAdmin):
+    search_fields = ["conversation__title"]
+    autocomplete_fields = ["conversation"]
+    list_display = [
+        "id",
+        "question",
+        "answer",
+        "prompt_tokens_usage",
+        "completion_tokens",
+        "total_tokens",
+        "is_deleted",
+        "created",
+    ]
+    list_editable = ["is_deleted"]

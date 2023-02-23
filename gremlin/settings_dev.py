@@ -3,7 +3,10 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
 env = environ.Env(
-    DEBUG=(bool, False), EMAIL_USE_TLS=(bool, True), ALLOWED_HOSTS=(list, [])
+    DEBUG=(bool, False),
+    EMAIL_USE_TLS=(bool, True),
+    ALLOWED_HOSTS=(list, []),
+    OPENAI_KEYS=(list, []),
 )
 
 environ.Env.read_env()
@@ -12,7 +15,7 @@ SECRET_KEY = env("SECRET_KEY")
 
 IOS_KEY = env("IOS_KEY")
 
-OPENAI_KEY = env("OPENAI_KEY")
+OPENAI_KEYS = env("OPENAI_KEYS")
 
 SECRET_ADMIN_URL = env("SECRET_ADMIN_URL")
 
@@ -53,7 +56,7 @@ REST_FRAMEWORK = {
     "DATETIME_FORMAT": "%b %d at %I:%M %P",
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_PAGINATION_CLASS": "gremlin.middleware.CustomPagination",
-    "PAGE_SIZE": 10,
+    "PAGE_SIZE": 20,
     "DEFAULT_THROTTLE_RATES": {
         "otp_in_min": "60/min",
         "otp_in_hour": "60/hour",
@@ -63,7 +66,6 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.TokenAuthentication"
     ],
 }
-
 
 # Apple
 APP_BUNDLE_ID = env("APP_BUNDLE_ID")

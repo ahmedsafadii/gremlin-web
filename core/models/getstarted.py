@@ -1,24 +1,20 @@
 from adminsortable2.admin import SortableAdminMixin
 from django.contrib import admin
-from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
 class GetStartedBot(models.Model):
-    user = models.ForeignKey(
-        User,
-        on_delete=models.RESTRICT,
+    device = models.ForeignKey(
+        "Device",
+        on_delete=models.CASCADE,
         related_name="bot",
         blank=True,
         null=True,
-        verbose_name=_("User"),
+        verbose_name=_("Device"),
     )
-    answers = models.ManyToManyField(
-        "GetStartedAnswer",
-        related_name="answers",
-        blank=False,
-        verbose_name=_("Get Started Answers"),
+    nickname = models.CharField(
+        max_length=255, null=False, blank=False, default="", verbose_name=_("Nickname")
     )
     is_complete = models.BooleanField(
         blank=False, null=False, default=False, verbose_name=_("Is complete")
@@ -33,7 +29,7 @@ class GetStartedBot(models.Model):
         verbose_name_plural = _("Get Started Bots")
 
     def __str__(self):
-        return self.user.username
+        return str(self.id)
 
 
 class GetStartedQuestion(models.Model):
@@ -42,8 +38,9 @@ class GetStartedQuestion(models.Model):
         blank=False,
         null=False,
     )
-    question = models.TextField(
-        max_length=255, blank=False, null=True, verbose_name=_("Device id")
+    question = models.TextField(blank=False, null=True, verbose_name=_("Question"))
+    is_final_question = models.BooleanField(
+        default=False, null=False, blank=False, verbose_name=_("Is final question")
     )
     created = models.DateTimeField(
         auto_now_add=True, null=True, verbose_name=_("Created")
@@ -60,6 +57,14 @@ class GetStartedQuestion(models.Model):
 
 
 class GetStartedAnswer(models.Model):
+    bot = models.ForeignKey(
+        "GetStartedBot",
+        on_delete=models.CASCADE,
+        related_name="answers",
+        blank=True,
+        null=True,
+        verbose_name=_("Device"),
+    )
     order = models.PositiveIntegerField(
         default=0,
         blank=False,
@@ -85,25 +90,25 @@ class GetStartedAnswer(models.Model):
         ordering = ["order"]
 
     def __str__(self):
-        return self.question
+        return str(self.id)
 
 
 @admin.register(GetStartedBot)
 class GetStartedBotAdmin(admin.ModelAdmin):
-    autocomplete_fields = ("user",)
-    filter_horizontal = ["answers"]
-    search_fields = ["user__username"]
-    list_display = ["id", "user", "is_complete", "created"]
+    autocomplete_fields = ("device",)
+    search_fields = ["device__device_id"]
+    list_display = ["id", "device", "nickname", "is_complete", "created"]
     list_filter = ["is_complete"]
 
 
 @admin.register(GetStartedQuestion)
 class GetStartedQuestionAdmin(SortableAdminMixin, admin.ModelAdmin):
     search_fields = ["question"]
-    list_display = ["id", "question", "created"]
+    list_display = ["id", "question", "is_final_question", "created"]
 
 
 @admin.register(GetStartedAnswer)
 class GetStartedAnswerAdmin(SortableAdminMixin, admin.ModelAdmin):
+    autocomplete_fields = ["bot"]
     search_fields = ["question"]
-    list_display = ["id", "question", "created"]
+    list_display = ["id", "bot", "answer", "created"]

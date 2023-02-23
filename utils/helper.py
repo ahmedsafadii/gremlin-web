@@ -6,6 +6,7 @@ from datetime import timedelta
 from django.utils.deconstruct import deconstructible
 from django.utils import timezone
 from gremlin.settings_dev import APP_KEY_ID, APP_TEAM_ID, APP_BUNDLE_ID
+import hashlib
 
 
 @deconstructible
@@ -62,3 +63,38 @@ def get_setting_value(key):
 #         credit = sum(user_plan.plan.words for user_plan in user_plans if not user_plan.plan.is_unlimited)
 #
 #     return {"credit": int(credit), "debit": int(debit), "balance": int(credit - debit) if int(credit - debit) >= 0 else 0}
+
+
+class UserColorGenerator:
+    @staticmethod
+    def generate_user_color(user_id):
+        # Hash the user ID using SHA256 to get a unique hash value
+        hash_val = hashlib.sha256(str(user_id).encode()).hexdigest()
+
+        # Use the last 6 characters of the hash value as the color code
+        color_code = hash_val[-6:]
+
+        # If the generated color code starts with a letter, add a 0 in front to ensure it is a valid hex code
+        if color_code[0] in ["a", "b", "c", "d", "e", "f"]:
+            color_code = "0" + color_code[1:]
+
+        # Modify the color code to make it darker
+        color_code = UserColorGenerator.darken_color(color_code)
+
+        # Return the color code with a '#' in front to indicate it is a hex code
+        return color_code
+
+    @staticmethod
+    def darken_color(color_code):
+        # Convert the hex color code to RGB values
+        r = int(color_code[0:2], 16)
+        g = int(color_code[2:4], 16)
+        b = int(color_code[4:6], 16)
+
+        # Darken the color by 30%
+        r = max(0, int(r * 0.7))
+        g = max(0, int(g * 0.7))
+        b = max(0, int(b * 0.7))
+
+        # Convert the new RGB values back to hex format
+        return "{:02x}{:02x}{:02x}".format(r, g, b)

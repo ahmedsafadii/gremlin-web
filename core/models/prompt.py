@@ -70,8 +70,8 @@ class SubTopicAdmin(admin.ModelAdmin):
 
 
 class Prompt(models.Model):
-    title = models.CharField(
-        max_length=255, blank=False, null=False, default="", verbose_name=_("Title")
+    title = models.TextField(
+        blank=False, null=False, default="", verbose_name=_("Title")
     )
     sub_topic = models.ForeignKey(
         SubTopic,
@@ -84,8 +84,7 @@ class Prompt(models.Model):
     content = models.TextField(
         blank=False, null=False, default="", verbose_name=_("Content")
     )
-    placeholder = models.CharField(
-        max_length=255,
+    placeholder = models.TextField(
         blank=False,
         null=False,
         default="",
@@ -93,6 +92,9 @@ class Prompt(models.Model):
     )
     hidden_prompt = models.TextField(
         blank=False, null=False, default="", verbose_name=_("Hidden prompt")
+    )
+    is_active = models.BooleanField(
+        blank=False, default=True, null=False, verbose_name=_("Is active")
     )
     created = models.DateTimeField(
         auto_now_add=True, null=True, verbose_name=_("Created")
@@ -109,6 +111,7 @@ class Prompt(models.Model):
 
 @admin.register(Prompt)
 class PromptAdmin(admin.ModelAdmin):
+    list_filter = ["sub_topic__topic"]
     autocomplete_fields = ["sub_topic"]
     search_fields = ["title", "content"]
     list_display = [

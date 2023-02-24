@@ -114,10 +114,12 @@ class PromptAdmin(admin.ModelAdmin):
     list_filter = ["sub_topic__topic"]
     autocomplete_fields = ["sub_topic"]
     search_fields = ["title", "content"]
+    list_editable = ["is_active"]
     list_display = [
         "id",
         "title",
         "placeholder",
+        "is_active",
         "created",
         "updated",
     ]

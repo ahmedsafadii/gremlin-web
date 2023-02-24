@@ -53,7 +53,7 @@ class PromptsListView(generics.ListCreateAPIView):
         query = self.request.GET
         topic = query.get("topic", None)
         q = query.get("q", None)
-        prompts = Prompt.objects.all()
+        prompts = Prompt.objects.filter(is_active=True)
 
         if topic:
             prompts = prompts.filter(sub_topic__topic_id=topic)

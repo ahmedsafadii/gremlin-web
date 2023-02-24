@@ -45,4 +45,4 @@ class SettingAdmin(admin.ModelAdmin):
     date_hierarchy = "created"
     search_fields = ("id", "label", "key", "value")
     list_display_links = ("label",)
-    list_display = ("id", "label", "created")
+    list_display = ("id", "label", "key", "value", "created")

@@ -111,6 +111,14 @@ class Prompt(models.Model):
 
 @admin.register(Prompt)
 class PromptAdmin(admin.ModelAdmin):
+    actions = ["deactivate_selected_prompts"]
+
+    @admin.action(description=_("Deactivate selected prompts"))
+    def deactivate_selected_prompts(self, request, queryset):
+        for row in queryset:
+            row.is_active = False
+            row.save()
+
     list_filter = ["sub_topic__topic"]
     autocomplete_fields = ["sub_topic"]
     search_fields = ["title", "content"]

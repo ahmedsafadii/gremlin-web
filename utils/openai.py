@@ -6,7 +6,7 @@ class OpenAIManager:
     def __init__(
         self,
         model="text-davinci-003",
-        max_tokens=150,
+        max_tokens=256,
         temperature=0.7,
         top_p=0.5,
         frequency_penalty=0.7,

@@ -202,7 +202,7 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
         user = self.context.get("request").user
         text = result["choices"][0]["text"].strip().rstrip("\n ,")
         title = text[:30].replace("\n", " ")
-        hidden_prompt += "\nAI: " + text + "\nHuman: "
+        hidden_prompt += text + "\n Human: "
         question = prompt
         usage = result["usage"]
         prompt_tokens_usage = usage["prompt_tokens"]
@@ -310,7 +310,7 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
                 messages = Message.objects.filter(
                     conversation=conversation, conversation__user=user
                 ).latest("id")
-                hidden_prompt = messages.hidden_prompt + "\nHuman: " + prompt
+                hidden_prompt = messages.hidden_prompt + " " + prompt + "\n AI:"
             else:
                 user = self.context.get("request").user
                 nickname = (
@@ -319,10 +319,9 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
                     else "Gremlin"
                 )
                 hidden_prompt = get_setting_value(key="general_chat_prompt").replace(
-                    "[NICKNAME]", f"({nickname})"
+                    "[NICKNAME]", f"({nickname}"
                 )
-                hidden_prompt += " " + prompt
-
+                hidden_prompt += " " + prompt + "\n AI: "
             response_status, response_data = self.send_prompt_request(
                 prompt=hidden_prompt
             )

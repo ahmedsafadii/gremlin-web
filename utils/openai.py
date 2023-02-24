@@ -1,16 +1,17 @@
 import openai
 from gremlin.settings_dev import OPENAI_KEYS
+from utils.helper import get_setting_value
 
 
 class OpenAIManager:
     def __init__(
         self,
-        model="text-davinci-003",
-        max_tokens=256,
-        temperature=0.7,
-        top_p=0.5,
-        frequency_penalty=0.7,
-        presence_penalty=0.7,
+        model=str(get_setting_value("model")),
+        max_tokens=int(get_setting_value("max_tokens")),
+        temperature=float(get_setting_value("temperature")),
+        top_p=float(get_setting_value("top_p")),
+        frequency_penalty=float(get_setting_value("frequency_penalty")),
+        presence_penalty=float(get_setting_value("presence_penalty")),
         is_general_chat=True,
     ):
 

@@ -11,7 +11,6 @@ from core.models import (
     Conversation,
 )
 from django.utils.translation import gettext_lazy as _
-
 from utils.helper import get_setting_value
 from utils.openai import OpenAIManager
 
@@ -235,6 +234,7 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
         user = self.context.get("request").user
         text = result["choices"][0]["text"].strip().rstrip("\n ,")
         title = text[:30].replace("\n", " ")
+        hidden_prompt += text + "\n Human: "
         question = prompt
         usage = result["usage"]
         prompt_tokens_usage = usage["prompt_tokens"]
@@ -255,7 +255,7 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
         message = self.create_message(
             conversation=conversation,
             question=question,
-            answer=text,
+            answer=text.replace("AI: ", ""),
             prompt_tokens_usage=prompt_tokens_usage,
             completion_tokens=completion_tokens,
             total_tokens=total_tokens,
@@ -291,19 +291,39 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
         conversation = self.validated_data.get("conversationId", None)
         user = self.context.get("request").user
 
+        nickname = (
+            UserSerializer().get_nickName(user, is_shortcut=False)
+            if UserSerializer().get_nickName(user, is_shortcut=False)
+            else "Gremlin"
+        )
+
         if wizard:
-            hidden_prompt = wizard.hidden_prompt.replace("[PROMPT]", prompt).replace(
-                "[TARGETLANGUAGE]", "English"
-            )
+            if conversation:
+                messages = Message.objects.filter(
+                    conversation=conversation, conversation__user=user
+                ).latest("id")
+                hidden_prompt = messages.hidden_prompt + " " + prompt + "\n AI:"
+            else:
+                prompt = wizard.hidden_prompt.replace("[PROMPT]", prompt).replace(
+                    "[TARGETLANGUAGE]", "English"
+                )
+                hidden_prompt = (
+                    get_setting_value(key="wizard_chat_prompt")
+                    .replace("[NICKNAME]", f"({nickname}")
+                    .replace("[WIZARD]", wizard.sub_topic.title)
+                )
+                hidden_prompt += " " + prompt + "\n AI: "
+
             response_status, response_data = self.send_prompt_request(
                 prompt=hidden_prompt
             )
+
             message = self._save_wizard_result(
                 prompt=prompt,
                 wizard=wizard,
+                hidden_prompt=hidden_prompt,
                 conversation=conversation,
                 result=response_data,
-                hidden_prompt=hidden_prompt,
             )
         else:
             if conversation:
@@ -312,12 +332,6 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
                 ).latest("id")
                 hidden_prompt = messages.hidden_prompt + " " + prompt + "\n AI:"
             else:
-                user = self.context.get("request").user
-                nickname = (
-                    UserSerializer().get_nickName(user, is_shortcut=False)
-                    if UserSerializer().get_nickName(user, is_shortcut=False)
-                    else "Gremlin"
-                )
                 hidden_prompt = get_setting_value(key="general_chat_prompt").replace(
                     "[NICKNAME]", f"({nickname}"
                 )

@@ -30,11 +30,6 @@ class OpenAIManager:
 
     def create_completion(self, prompt):
         try:
-            if self.is_general_chat:
-                stop = [" Human:", " AI:"]
-            else:
-                stop = None
-
             response = openai.Completion.create(
                 model=self.model,
                 prompt=prompt,
@@ -43,9 +38,8 @@ class OpenAIManager:
                 top_p=self.top_p,
                 frequency_penalty=self.frequency_penalty,
                 presence_penalty=self.presence_penalty,
-                stop=stop,
+                stop=[" Human:", " AI:"],
             )
-
             return True, response
         except openai.error.RateLimitError:
             # TODO: I need to create a notification center for each key, to balance the usage

@@ -202,7 +202,7 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
         user = self.context.get("request").user
         text = result["choices"][0]["text"].strip().rstrip("\n ,")
         title = text[:30].replace("\n", " ")
-        hidden_prompt += "\n" + text
+        hidden_prompt += "\nAI: " + text + "\nHuman: "
         question = prompt
         usage = result["usage"]
         prompt_tokens_usage = usage["prompt_tokens"]
@@ -321,7 +321,7 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
                 hidden_prompt = get_setting_value(key="general_chat_prompt").replace(
                     "[NICKNAME]", f"({nickname})"
                 )
-                hidden_prompt += "\nHuman: " + prompt
+                hidden_prompt += " " + prompt
 
             response_status, response_data = self.send_prompt_request(
                 prompt=hidden_prompt

@@ -6,11 +6,11 @@ class OpenAIManager:
     def __init__(
         self,
         model="text-davinci-003",
-        max_tokens=100,
-        temperature=0.1,
-        top_p=0.1,
-        frequency_penalty=0,
-        presence_penalty=0,
+        max_tokens=150,
+        temperature=0.7,
+        top_p=0.5,
+        frequency_penalty=0.7,
+        presence_penalty=0.7,
         is_general_chat=True,
     ):
 

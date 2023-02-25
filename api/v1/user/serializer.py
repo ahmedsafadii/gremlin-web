@@ -150,7 +150,6 @@ class AppleLoginSerializer(serializers.Serializer):  # noqa
         access_token_url = "https://appleid.apple.com/auth/token"
 
         client_id, client_secret = get_apple_user()
-        print(client_id, client_secret)
         headers = {"content-type": "application/x-www-form-urlencoded"}
 
         data = {

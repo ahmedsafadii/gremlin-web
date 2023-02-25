@@ -43,6 +43,7 @@ INSTALLED_APPS += [
     "rest_framework.authtoken",
     "kronos",
     "adminsortable2",
+    "silk",
 ]
 
 MIDDLEWARE = [
@@ -142,7 +143,4 @@ except ImportError:
     pass
 
 if DEBUG:
-    INSTALLED_APPS += ["django_dump_load_utf8", "sslserver", "silk"]
-    SILKY_PYTHON_PROFILER = True
-    SILKY_PYTHON_PROFILER_BINARY = True
-    SILKY_ANALYZE_QUERIES = True
+    INSTALLED_APPS += ["django_dump_load_utf8", "sslserver"]

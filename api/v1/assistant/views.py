@@ -8,6 +8,7 @@ from api.v1.assistant.serializer import (
     ConversationSerializer,
     MessageSerializer,
     CreateMessageSerializer,
+    PublicLobbySerializer,
 )
 from core.models import Prompt, Conversation, Message
 from gremlin.middleware import response
@@ -46,7 +47,7 @@ class GetStartedHistoryView(APIView):
 
 class PublicLobbyListView(generics.ListAPIView):
     permission_classes = (AllowAny,)
-    serializer_class = MessageSerializer
+    serializer_class = PublicLobbySerializer
 
     def get_queryset(self):
         return Message.objects.filter(

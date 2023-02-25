@@ -152,6 +152,19 @@ class PromptsSerializer(serializers.ModelSerializer):
         fields = ["id", "topic", "title", "content", "placeholder"]
 
 
+class PublicLobbySerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_user(obj):
+        user = UserSerializer(obj.conversation.user, many=False).data
+        return {"nickName": user["nickName"], "color": user["userColor"]}
+
+    class Meta:
+        model = Message
+        fields = ["id", "question", "answer", "user"]
+
+
 class MessageSerializer(serializers.ModelSerializer):
     conversationId = serializers.SerializerMethodField()
 

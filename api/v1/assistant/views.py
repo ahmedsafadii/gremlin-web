@@ -9,6 +9,7 @@ from api.v1.assistant.serializer import (
     MessageSerializer,
     CreateMessageSerializer,
     PublicLobbySerializer,
+    GetStartedHistorySerializer,
 )
 from core.models import Prompt, Conversation, Message
 from gremlin.middleware import response
@@ -32,7 +33,7 @@ class GetStartedView(APIView):
 
 class GetStartedHistoryView(APIView):
     permission_classes = [AllowAny]
-    serializer_class = MessageSerializer
+    serializer_class = GetStartedHistorySerializer
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(

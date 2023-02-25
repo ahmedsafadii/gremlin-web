@@ -7,7 +7,7 @@ urlpatterns = [
     path("prompts", views.PromptsListView.as_view()),
     path("public_lobby", views.PublicLobbyListView.as_view()),
     path("conversation", views.ConversationView.as_view()),
-    # path("create_message", views.CreateMessageView.as_view()),
+    path("create_message", views.CreateMessageView.as_view()),
     path("delete_all_conversation", views.DeleteConversationView.as_view()),
     path("messages/<int:conversation_id>/", views.MessageView.as_view()),
 ]

@@ -31,7 +31,7 @@ def get_apple_user():
     }
 
     key_path = os.path.join(
-        os.path.dirname(os.path.dirname(__file__)), "utils/keys/AuthKey_Y6AK8K79V7.p8"
+        os.path.dirname(os.path.dirname(__file__)), "utils/keys/AuthKey_TV7554QL5R.p8"
     )
 
     with open(key_path, "r+b") as keyfile:

@@ -50,7 +50,7 @@ class PublicLobbyListView(generics.ListAPIView):
 
     def get_queryset(self):
         return Message.objects.filter(
-            conversation__show_in_public_lobby=True, conversation__prompt__isnull=False
+            conversation__show_in_public_lobby=True, conversation__prompt__isnull=True
         ).order_by("created")[:1]
 
     def get(self, request, *args, **kwargs):

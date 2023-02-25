@@ -1,7 +1,3 @@
-# Created by https://www.toptal.com/developers/gitignore/api/django,python,pycharm,venv
-# Edit at https://www.toptal.com/developers/gitignore?templates=django,python,pycharm,venv
-
-
 ### Django ###
 /**/.idea/*
 **/.DS_Store
@@ -343,5 +339,4 @@ key.pem
 venv
 /static/
 /content/
-/utils/keys/AuthKey_Y6AK8K79V7.p8
-# End of https://www.toptal.com/developers/gitignore/api/django,python,pycharm,venv
+/utils/keys/AuthKey_TV7554QL5R.p8

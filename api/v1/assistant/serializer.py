@@ -167,10 +167,17 @@ class MessageSerializer(serializers.ModelSerializer):
 class ConversationSerializer(serializers.ModelSerializer):
     prompt = PromptsSerializer(many=False)
     historyLength = serializers.ReadOnlyField(source="history_length")
+    showInPublicLobby = serializers.ReadOnlyField(source="show_in_public_lobby")
 
     class Meta:
         model = Conversation
-        fields = ["id", "title", "prompt", "historyLength", "created"]
+        fields = [
+            "id",
+            "title",
+            "prompt",
+            "showInPublicLobby" "historyLength",
+            "created",
+        ]
 
 
 class CreateMessageSerializer(serializers.Serializer):  # noqa

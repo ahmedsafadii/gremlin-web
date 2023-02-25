@@ -4,7 +4,6 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from api.v1.assistant.serializer import (
     GetStartedSerializer,
-    GetStartedHistorySerializer,
     PromptsSerializer,
     ConversationSerializer,
     MessageSerializer,
@@ -32,7 +31,7 @@ class GetStartedView(APIView):
 
 class GetStartedHistoryView(APIView):
     permission_classes = [AllowAny]
-    serializer_class = GetStartedHistorySerializer
+    serializer_class = MessageSerializer
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(
@@ -45,8 +44,21 @@ class GetStartedHistoryView(APIView):
             return response(False, None, serializer.errors)
 
 
-class PromptsListView(generics.ListCreateAPIView):
+class PublicLobbyListView(generics.ListAPIView):
     permission_classes = (AllowAny,)
+    serializer_class = MessageSerializer
+
+    def get_queryset(self):
+        return Message.objects.filter(
+            conversation__show_in_public_lobby=True, conversation__prompt__isnull=False
+        ).order_by("created")[:1]
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+
+class PromptsListView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
     serializer_class = PromptsSerializer
 
     def get_queryset(self):
@@ -82,7 +94,7 @@ class DeleteConversationView(APIView):
 
 
 class CreateMessageView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     serializer_class = CreateMessageSerializer
 
     def post(self, request, *args, **kwargs):
@@ -96,7 +108,7 @@ class CreateMessageView(APIView):
             return response(False, None, serializer.errors)
 
 
-class ConversationView(generics.ListCreateAPIView):
+class ConversationView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ConversationSerializer
 
@@ -109,7 +121,7 @@ class ConversationView(generics.ListCreateAPIView):
         return self.list(request, *args, **kwargs)
 
 
-class MessageView(generics.ListCreateAPIView):
+class MessageView(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = MessageSerializer
     pagination_class = None

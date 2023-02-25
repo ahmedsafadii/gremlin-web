@@ -30,6 +30,9 @@ class Conversation(models.Model):
     history_length = models.IntegerField(
         default=0, blank=False, null=False, verbose_name=_("Chat history length")
     )
+    show_in_public_lobby = models.BooleanField(
+        default=True, null=False, blank=False, verbose_name=_("Is public lobby?")
+    )
     created = models.DateTimeField(
         auto_now_add=True, null=True, verbose_name=_("Created")
     )

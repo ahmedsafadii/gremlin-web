@@ -175,7 +175,8 @@ class ConversationSerializer(serializers.ModelSerializer):
             "id",
             "title",
             "prompt",
-            "showInPublicLobby" "historyLength",
+            "showInPublicLobby",
+            "historyLength",
             "created",
         ]
 

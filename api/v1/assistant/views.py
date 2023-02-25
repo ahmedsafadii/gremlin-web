@@ -47,13 +47,19 @@ class GetStartedHistoryView(APIView):
 
 
 class PublicLobbyListView(generics.ListAPIView):
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = PublicLobbySerializer
 
     def get_queryset(self):
-        return Message.objects.filter(
-            conversation__show_in_public_lobby=True, conversation__prompt__isnull=True
-        ).order_by("-created")[:1]
+        user = self.request.user
+        return (
+            Message.objects.filter(
+                conversation__show_in_public_lobby=True,
+                conversation__prompt__isnull=True,
+            )
+            .exclude(conversation__user=user)
+            .order_by("-created")[:1]
+        )
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)

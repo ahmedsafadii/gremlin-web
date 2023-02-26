@@ -12,7 +12,7 @@ class Tools(APIView):
     def _get_on_boarding_and_plans():
         plans_qs = (
             Plan.objects.filter(is_active=True)
-            .only("id", "title", "words_amount", "max_request_per_hour", "bundle_id")
+            .only("id", "title", "tokens", "max_request_per_hour", "bundle_id")
             .order_by("order")
         )
         on_boarding_qs = OnBoarding.objects.only("id", "title", "image")

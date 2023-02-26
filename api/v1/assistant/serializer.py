@@ -167,6 +167,15 @@ class PublicLobbySerializer(serializers.ModelSerializer):
 
 class MessageSerializer(serializers.ModelSerializer):
     conversationId = serializers.SerializerMethodField()
+    balance = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_balance(obj):
+        return (
+            UserSerializer(obj.conversation.user)
+            .data.get("balance", {})
+            .get("balance", 0)
+        )
 
     @staticmethod
     def get_conversationId(obj):
@@ -174,7 +183,7 @@ class MessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        fields = ["id", "question", "answer", "conversationId"]
+        fields = ["id", "question", "answer", "conversationId", "balance"]
 
 
 class ConversationSerializer(serializers.ModelSerializer):
@@ -213,6 +222,15 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
         except Prompt.DoesNotExist:
             raise serializers.ValidationError(_("This prompt is not available"))
 
+    def validate(self, attrs):
+        # Check user balance
+        user = self.context.get("request").user
+        user_balance = UserSerializer(user).data.get("balance", {}).get("balance", 0)
+        if user_balance <= 0:
+            raise serializers.ValidationError(_("You are out of balance"))
+
+        return attrs
+
     @staticmethod
     def send_prompt_request(prompt):
         open_ai_manager = OpenAIManager(is_general_chat=True)
@@ -223,7 +241,6 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
         text = result["choices"][0]["text"].strip().rstrip("\n ,")
         title = text[:30].replace("\n", " ")
         hidden_prompt += text + "\n Human: "
-        question = prompt
         usage = result["usage"]
         prompt_tokens_usage = usage["prompt_tokens"]
         completion_tokens = usage["completion_tokens"]
@@ -241,7 +258,7 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
 
         message = self.create_message(
             conversation=conversation,
-            question=question,
+            question=prompt,
             answer=text.replace("AI: ", ""),
             prompt_tokens_usage=prompt_tokens_usage,
             completion_tokens=completion_tokens,
@@ -256,7 +273,6 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
         text = result["choices"][0]["text"].strip().rstrip("\n ,")
         title = text[:30].replace("\n", " ")
         hidden_prompt += text + "\n Human: "
-        question = prompt
         usage = result["usage"]
         prompt_tokens_usage = usage["prompt_tokens"]
         completion_tokens = usage["completion_tokens"]
@@ -275,7 +291,7 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
 
         message = self.create_message(
             conversation=conversation,
-            question=question,
+            question=prompt,
             answer=text.replace("AI: ", ""),
             prompt_tokens_usage=prompt_tokens_usage,
             completion_tokens=completion_tokens,
@@ -325,20 +341,19 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
                 ).latest("id")
                 hidden_prompt = messages.hidden_prompt + " " + prompt + "\n AI:"
             else:
-                prompt = wizard.hidden_prompt.replace("[PROMPT]", prompt).replace(
-                    "[TARGETLANGUAGE]", "English"
-                )
+                wizard_prompt = wizard.hidden_prompt.replace(
+                    "[PROMPT]", prompt
+                ).replace("[TARGETLANGUAGE]", "English")
                 hidden_prompt = (
                     get_setting_value(key="wizard_chat_prompt")
                     .replace("[NICKNAME]", f"({nickname}")
                     .replace("[WIZARD]", wizard.sub_topic.title)
                 )
-                hidden_prompt += " " + prompt + "\n AI: "
+                hidden_prompt += " " + wizard_prompt + "\n AI: "
 
             response_status, response_data = self.send_prompt_request(
                 prompt=hidden_prompt
             )
-
             message = self._save_wizard_result(
                 prompt=prompt,
                 wizard=wizard,

@@ -13,7 +13,7 @@ class Plan(models.Model):
     title = models.CharField(
         max_length=255, blank=False, null=True, verbose_name=_("Title")
     )
-    words_amount = models.IntegerField(blank=False, null=True, verbose_name=_("Words"))
+    tokens = models.IntegerField(blank=False, null=True, verbose_name=_("Tokens"))
     max_request_per_hour = models.IntegerField(
         blank=False, null=True, verbose_name=_("Max request per hour")
     )
@@ -29,6 +29,7 @@ class Plan(models.Model):
     updated = models.DateTimeField(auto_now=True, null=True, verbose_name=_("Updated"))
 
     class Meta:
+        unique_together = []
         verbose_name = _("Plan")
         verbose_name_plural = _("Plans")
         ordering = ["order"]
@@ -43,7 +44,7 @@ class PlanAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = [
         "id",
         "title",
-        "words_amount",
+        "tokens",
         "max_request_per_hour",
         "bundle_id",
         "is_active",

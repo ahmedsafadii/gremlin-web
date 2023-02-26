@@ -9,13 +9,12 @@ class OnBoardingSerializer(serializers.ModelSerializer):  # noqa
 
 
 class PlanSerializer(serializers.ModelSerializer):  # noqa
-    wordsAmount = serializers.ReadOnlyField(source="words_amount")
     maxRequestPerHour = serializers.ReadOnlyField(source="max_request_per_hour")
     bundleId = serializers.ReadOnlyField(source="bundle_id")
 
     class Meta:
         model = Plan
-        fields = ["id", "title", "wordsAmount", "maxRequestPerHour", "bundleId"]
+        fields = ["id", "title", "tokens", "maxRequestPerHour", "bundleId"]
 
 
 class ToolsSerializer(serializers.Serializer):  # noqa

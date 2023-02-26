@@ -1,12 +1,13 @@
 import jwt
 import requests
 from django.contrib.auth.models import User
-from django.db.models import F
+from django.db.models import F, Sum
 from rest_framework import serializers
 from rest_framework.status import HTTP_200_OK
 from django.utils.translation import gettext_lazy as _
 from core.models import Device, GetStartedBot
 from rest_framework.authtoken.models import Token
+from core.models.user import UserTransaction
 from utils.helper import get_apple_user, UserColorGenerator
 
 
@@ -55,6 +56,9 @@ class UserSerializer(serializers.ModelSerializer):
     userId = serializers.IntegerField(source="id")
     userColor = serializers.SerializerMethodField()
     nickName = serializers.SerializerMethodField()
+    balance = serializers.SerializerMethodField()
+    claimGift = serializers.SerializerMethodField()
+    hasPlanBeofre = serializers.SerializerMethodField
 
     class Meta:
         model = User
@@ -66,7 +70,34 @@ class UserSerializer(serializers.ModelSerializer):
             "token",
             "userColor",
             "nickName",
+            "balance",
+            "claimGift",
         ]
+
+    @staticmethod
+    def get_claimGift(obj):
+        return obj.transactions.filter(is_gift=True).exists()
+
+    @staticmethod
+    def get_balance(obj):
+        debit_subquery = obj.transactions.filter(
+            is_credit=False,
+        ).aggregate(debit=Sum("amount"))
+
+        credit_subquery = obj.transactions.filter(
+            is_credit=True,
+        ).aggregate(credit=Sum("amount"))
+
+        credit = credit_subquery["credit"] or 0
+        debit = debit_subquery["debit"] or 0
+
+        balance = credit - debit
+
+        return {
+            "debit": debit,
+            "credit": credit,
+            "balance": balance,
+        }
 
     @staticmethod
     def get_nickName(obj, is_shortcut=True):
@@ -88,6 +119,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class GoogleLoginSerializer(serializers.Serializer):  # noqa
     accessToken = serializers.CharField(allow_blank=False, required=True)
+    deviceId = serializers.CharField(allow_blank=False, required=True)
 
     @staticmethod
     def _request_google_user(token):
@@ -101,6 +133,11 @@ class GoogleLoginSerializer(serializers.Serializer):  # noqa
             raise serializers.ValidationError(
                 {"auth": [_("Unable to fetch google info data")]}
             )
+
+    @staticmethod
+    def add_free_credits(user):
+        if not UserTransaction.objects.filter(user=user, is_free=True).exists():
+            UserTransaction.objects.create_free_transaction(user=user)
 
     @staticmethod
     def _check_or_retrieve(user_id):
@@ -126,6 +163,7 @@ class GoogleLoginSerializer(serializers.Serializer):  # noqa
 
     def save(self, **kwargs):
         access_token = self.validated_data.get("accessToken")
+        device_id = self.validated_data.get("deviceId")
         google_data = self._request_google_user(access_token)
         user_id = google_data.get("sub")
         email = google_data.get("email")
@@ -138,7 +176,14 @@ class GoogleLoginSerializer(serializers.Serializer):  # noqa
             user = self._create_user(
                 user_id=user_id, email=email, first_name=first_name, last_name=last_name
             )
+        user.is_active = True
+        user.save()
+        self.add_free_credits(user=user)
         Token.objects.update_or_create(user=user)
+
+        if device_id:
+            Device.objects.filter(device_id=device_id).update(user=user)
+
         return UserSerializer(user).data
 
 

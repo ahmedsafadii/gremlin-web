@@ -49,22 +49,6 @@ def get_setting_value(key):
         return ""
 
 
-# def get_user_balance(user_id):
-#     from core.models import UserPlan, Bot
-#
-#     credit = 0
-#
-#     user_plans = UserPlan.objects.filter(user_id=user_id).exclude(plan__is_unlimited=True)
-#     debit = Bot.objects.filter(user_id=user_id, user__plans__expire_in__isnull=True).aggregate(
-#         Sum("total_answer_words")
-#     )["total_answer_words__sum"] or 0
-#
-#     if len(user_plans) > 0:
-#         credit = sum(user_plan.plan.words for user_plan in user_plans if not user_plan.plan.is_unlimited)
-#
-#     return {"credit": int(credit), "debit": int(debit), "balance": int(credit - debit) if int(credit - debit) >= 0 else 0}
-
-
 class UserColorGenerator:
     @staticmethod
     def generate_user_color(user_id):

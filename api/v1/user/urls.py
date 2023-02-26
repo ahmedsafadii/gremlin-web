@@ -7,5 +7,6 @@ urlpatterns = [
     path("login_with_apple", views.AppleLoginView.as_view()),
     path("profile", views.ProfileView.as_view()),
     path("delete_account", views.DeleteAccountView.as_view()),
+    path("claim_rating_gift", views.ClaimRatingGiftView.as_view()),
     path("logout", views.LogoutView.as_view()),
 ]

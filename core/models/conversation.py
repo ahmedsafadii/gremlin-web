@@ -2,6 +2,11 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+from api.v1.user.serializer import UserSerializer
+from core.models.user import UserTransaction
 
 
 class Conversation(models.Model):
@@ -31,7 +36,7 @@ class Conversation(models.Model):
         default=0, blank=False, null=False, verbose_name=_("Chat history length")
     )
     show_in_public_lobby = models.BooleanField(
-        default=True, null=False, blank=False, verbose_name=_("Is public lobby?")
+        default=False, null=False, blank=False, verbose_name=_("Is public lobby?")
     )
     created = models.DateTimeField(
         auto_now_add=True, null=True, verbose_name=_("Created")
@@ -135,3 +140,25 @@ class MessageAdmin(admin.ModelAdmin):
         "created",
     ]
     list_editable = ["is_deleted"]
+
+
+@receiver(post_save, sender=Message)
+def my_post_save_function(sender, instance, created, **kwargs):
+    """
+    A post save signal function for the Message model.
+    """
+    if created:
+        total_tokens = instance.total_tokens
+        user_balance = (
+            UserSerializer(instance.conversation.user)
+            .data.get("balance", {})
+            .get("balance", 0)
+        )
+        if total_tokens >= user_balance:
+            total_tokens = user_balance
+        UserTransaction.objects.create_transaction(
+            user=instance.conversation.user,
+            amount=total_tokens,
+            is_credit=False,
+            notes=f"Cost for message id {instance.id}",
+        )

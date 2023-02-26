@@ -58,7 +58,7 @@ class UserSerializer(serializers.ModelSerializer):
     nickName = serializers.SerializerMethodField()
     balance = serializers.SerializerMethodField()
     claimGift = serializers.SerializerMethodField()
-    hasPlanBeofre = serializers.SerializerMethodField
+    hasPlan = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -72,7 +72,12 @@ class UserSerializer(serializers.ModelSerializer):
             "nickName",
             "balance",
             "claimGift",
+            "hasPlan",
         ]
+
+    @staticmethod
+    def get_hasPlan(obj):
+        return obj.plans.filiter(is_active=True).exists()
 
     @staticmethod
     def get_claimGift(obj):

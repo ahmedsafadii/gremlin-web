@@ -77,7 +77,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_hasPlan(obj):
-        return obj.plans.filiter(is_active=True).exists()
+        return obj.plans.filter(is_active=True).exists()
 
     @staticmethod
     def get_claimGift(obj):

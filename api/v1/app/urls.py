@@ -3,4 +3,5 @@ from django.urls import path
 
 urlpatterns = [
     path("tools", views.Tools.as_view()),
+    path("hooks/apple", views.AppleWebHookView.as_view()),
 ]

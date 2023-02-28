@@ -1,8 +1,11 @@
+import json
+
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from api.v1.app.serializer import ToolsSerializer
 from core.models import Plan, OnBoarding, Topic
-from gremlin.middleware import response
+from core.models.app import AppleWebHook
+from gremlin.middleware import response, catch_custom_exception
 
 
 class Tools(APIView):
@@ -38,3 +41,23 @@ class Tools(APIView):
             return response(True, tools_ser.data)
         else:
             return response(False, None, tools_ser.errors)
+
+
+class AppleWebHookView(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        try:
+            get_body = dict(request.GET.items())
+            post_body = request.data if request.data else {}
+            hook = AppleWebHook()
+            hook.get_body = json.dumps(get_body)
+            hook.post_body = json.dumps(post_body)
+            hook.save()
+            return response(True, "Response saved")
+        except Exception as e:
+            hook = AppleWebHook()
+            hook.error = str(e)
+            hook.save()
+            catch_custom_exception(e, request)
+            return response(False, str(e))

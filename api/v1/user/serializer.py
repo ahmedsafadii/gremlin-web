@@ -254,6 +254,6 @@ class AppleLoginSerializer(serializers.Serializer):  # noqa
             user = self._create_user(
                 user_id=user_id, email=email, first_name="Apple", last_name=user_id
             )
-
+        GoogleLoginSerializer.add_free_credits(user=user)
         Token.objects.update_or_create(user=user)
         return UserSerializer(user).data

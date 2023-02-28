@@ -13,6 +13,7 @@ class Plan(models.Model):
     title = models.CharField(
         max_length=255, blank=False, null=True, verbose_name=_("Title")
     )
+    sub_title = models.TextField(blank=False, null=True, verbose_name=_("Subtitle"))
     tokens = models.IntegerField(blank=False, null=True, verbose_name=_("Tokens"))
     max_request_per_hour = models.IntegerField(
         blank=False, null=True, verbose_name=_("Max request per hour")
@@ -22,6 +23,16 @@ class Plan(models.Model):
     )
     is_active = models.BooleanField(
         blank=False, null=False, default=False, verbose_name=_("Is active")
+    )
+    is_subscription = models.BooleanField(
+        blank=False, null=False, default=False, verbose_name=_("Is subscription")
+    )
+    promotion_text = models.TextField(
+        blank=True,
+        null=False,
+        default="",
+        verbose_name=_("Promotion text"),
+        help_text=_("Use {{amount}} for amount"),
     )
     created = models.DateTimeField(
         auto_now_add=True, null=True, verbose_name=_("Created")

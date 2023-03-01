@@ -192,6 +192,16 @@ class ConversationSerializer(serializers.ModelSerializer):
     showInPublicLobby = serializers.ReadOnlyField(source="show_in_public_lobby")
     tokenUsageWarning = serializers.ReadOnlyField(source="token_usage_warning")
     isCustomTitle = serializers.ReadOnlyField(source="is_custom_title")
+    tokenMaxUsage = serializers.SerializerMethodField()
+    totalMessages = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_totalMessages(obj):
+        return obj.messages.count()
+
+    @staticmethod
+    def get_tokenMaxUsage():
+        return 4000
 
     class Meta:
         model = Conversation
@@ -203,6 +213,8 @@ class ConversationSerializer(serializers.ModelSerializer):
             "historyLength",
             "tokenUsageWarning",
             "isCustomTitle",
+            "tokenMaxUsage",
+            "totalMessages",
             "created",
         ]
 

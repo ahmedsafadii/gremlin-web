@@ -38,7 +38,7 @@ class Conversation(models.Model):
         default=False, blank=False, verbose_name=_("Is deleted")
     )
     history_length = models.IntegerField(
-        default=0, blank=False, null=False, verbose_name=_("Chat history length")
+        default=1, blank=False, null=False, verbose_name=_("Chat history length")
     )
     show_in_public_lobby = models.BooleanField(
         default=False, null=False, blank=False, verbose_name=_("Is public lobby?")

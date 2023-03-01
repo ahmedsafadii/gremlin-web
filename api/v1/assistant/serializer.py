@@ -200,7 +200,7 @@ class ConversationSerializer(serializers.ModelSerializer):
         return obj.messages.count()
 
     @staticmethod
-    def get_tokenMaxUsage():
+    def get_tokenMaxUsage(obj):
         return 4000
 
     class Meta:

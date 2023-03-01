@@ -190,6 +190,8 @@ class ConversationSerializer(serializers.ModelSerializer):
     prompt = PromptsSerializer(many=False)
     historyLength = serializers.ReadOnlyField(source="history_length")
     showInPublicLobby = serializers.ReadOnlyField(source="show_in_public_lobby")
+    tokenUsageWarning = serializers.ReadOnlyField(source="token_usage_warning")
+    isCustomTitle = serializers.ReadOnlyField(source="is_custom_title")
 
     class Meta:
         model = Conversation
@@ -199,6 +201,8 @@ class ConversationSerializer(serializers.ModelSerializer):
             "prompt",
             "showInPublicLobby",
             "historyLength",
+            "tokenUsageWarning",
+            "isCustomTitle",
             "created",
         ]
 

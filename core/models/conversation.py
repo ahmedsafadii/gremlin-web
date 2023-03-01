@@ -4,7 +4,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
 from api.v1.user.serializer import UserSerializer
 from core.models.user import UserTransaction
 
@@ -28,6 +27,12 @@ class Conversation(models.Model):
     )
     title = models.CharField(
         max_length=255, blank=False, default="", verbose_name=_("Title")
+    )
+    token_usage_warning = models.PositiveIntegerField(
+        blank=False, default=200, verbose_name=_("Token usage warning")
+    )
+    is_custom_title = models.BooleanField(
+        default=False, blank=False, verbose_name=_("Is custom title")
     )
     is_deleted = models.BooleanField(
         default=False, blank=False, verbose_name=_("Is deleted")

@@ -248,15 +248,14 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
         return attrs
 
     @staticmethod
-    def send_prompt_request(prompt):
+    def send_prompt_request(messages):
         open_ai_manager = OpenAIManager(is_general_chat=True)
-        return open_ai_manager.create_completion(prompt=prompt)
+        return open_ai_manager.create_completion(messages=messages)
 
-    def _save_general_chat_result(self, prompt, hidden_prompt, conversation, result):
+    def _save_result(self, prompt, conversation, result, wizard=None):
         user = self.context.get("request").user
-        text = result["choices"][0]["text"].strip().rstrip("\n ,")
+        text = result["choices"][0]["message"]["content"].strip().rstrip("\n ,")
         title = text[:30].replace("\n", " ")
-        hidden_prompt += text + "\n Human: "
         usage = result["usage"]
         prompt_tokens_usage = usage["prompt_tokens"]
         completion_tokens = usage["completion_tokens"]
@@ -267,52 +266,16 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
             conversation.save()
         else:
             conversation = Conversation.objects.create(
-                user=user,
-                title=title,
-                history_length=0,
+                user=user, title=title, prompt=wizard
             )
 
         message = self.create_message(
             conversation=conversation,
             question=prompt,
-            answer=text.replace("AI: ", ""),
+            answer=text,
             prompt_tokens_usage=prompt_tokens_usage,
             completion_tokens=completion_tokens,
             total_tokens=total_tokens,
-            hidden_prompt=hidden_prompt,
-        )
-
-        return message
-
-    def _save_wizard_result(self, prompt, wizard, conversation, result, hidden_prompt):
-        user = self.context.get("request").user
-        text = result["choices"][0]["text"].strip().rstrip("\n ,")
-        title = text[:30].replace("\n", " ")
-        hidden_prompt += text + "\n Human: "
-        usage = result["usage"]
-        prompt_tokens_usage = usage["prompt_tokens"]
-        completion_tokens = usage["completion_tokens"]
-        total_tokens = usage["total_tokens"]
-
-        if conversation:
-            conversation.title = title
-            conversation.save()
-        else:
-            conversation = Conversation.objects.create(
-                user=user,
-                title=title,
-                prompt=wizard,
-                history_length=0,
-            )
-
-        message = self.create_message(
-            conversation=conversation,
-            question=prompt,
-            answer=text.replace("AI: ", ""),
-            prompt_tokens_usage=prompt_tokens_usage,
-            completion_tokens=completion_tokens,
-            total_tokens=total_tokens,
-            hidden_prompt=hidden_prompt,
         )
 
         return message
@@ -325,7 +288,6 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
         prompt_tokens_usage,
         completion_tokens,
         total_tokens,
-        hidden_prompt,
     ):
         message = Message.objects.create(
             conversation=conversation,
@@ -334,71 +296,85 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
             prompt_tokens_usage=prompt_tokens_usage,
             completion_tokens=completion_tokens,
             total_tokens=total_tokens,
-            hidden_prompt=hidden_prompt,
         )
         return message
 
     def create(self, validated_data):
-        wizard = self.validated_data.get("wizardId", None)
-        prompt = self.validated_data.get("prompt", None)
-        conversation = self.validated_data.get("conversationId", None)
-        user = self.context.get("request").user
+        wizard_id = validated_data.get("wizardId")
+        prompt = validated_data.get("prompt")
+        conversation_id = validated_data.get("conversationId")
+        user = self.context["request"].user
+        nickname = UserSerializer().get_nickName(user, is_shortcut=False) or "Gremlin"
 
-        nickname = (
-            UserSerializer().get_nickName(user, is_shortcut=False)
-            if UserSerializer().get_nickName(user, is_shortcut=False)
-            else "Gremlin"
-        )
-
-        if wizard:
-            if conversation:
-                messages = Message.objects.filter(
-                    conversation=conversation, conversation__user=user
-                ).latest("id")
-                hidden_prompt = messages.hidden_prompt + " " + prompt + "\n AI:"
-            else:
-                wizard_prompt = wizard.hidden_prompt.replace(
-                    "[PROMPT]", prompt
-                ).replace("[TARGETLANGUAGE]", "English")
-                hidden_prompt = (
-                    get_setting_value(key="wizard_chat_prompt")
-                    .replace("[NICKNAME]", f"({nickname}")
-                    .replace("[WIZARD]", wizard.sub_topic.title)
-                )
-                hidden_prompt += " " + wizard_prompt + "\n AI: "
-
-            response_status, response_data = self.send_prompt_request(
-                prompt=hidden_prompt
+        messages = []
+        if wizard_id:
+            messages.append(
+                {
+                    "role": "system",
+                    "content": get_setting_value(key="wizard_chat_prompt").replace(
+                        "[WIZARD]", wizard_id.sub_topic.title
+                    ),
+                }
             )
-            message = self._save_wizard_result(
-                prompt=prompt,
-                wizard=wizard,
-                hidden_prompt=hidden_prompt,
-                conversation=conversation,
-                result=response_data,
+            messages.append(
+                {
+                    "role": "assistant",
+                    "content": f"Hello ({nickname}), how can I help you today?",
+                }
             )
         else:
-            if conversation:
-                messages = Message.objects.filter(
-                    conversation=conversation, conversation__user=user
-                ).latest("id")
-                hidden_prompt = messages.hidden_prompt + " " + prompt + "\n AI:"
-            else:
-                hidden_prompt = get_setting_value(key="general_chat_prompt").replace(
-                    "[NICKNAME]", f"({nickname}"
-                )
-                hidden_prompt += " " + prompt + "\n AI: "
-            response_status, response_data = self.send_prompt_request(
-                prompt=hidden_prompt
+            messages.append(
+                {
+                    "role": "system",
+                    "content": get_setting_value(key="general_chat_prompt"),
+                }
             )
-            message = self._save_general_chat_result(
-                prompt=prompt,
-                hidden_prompt=hidden_prompt,
-                conversation=conversation,
-                result=response_data,
+            messages.append(
+                {
+                    "role": "user",
+                    "content": f"Hello, my name is {nickname}, who are you?",
+                }
+            )
+            messages.append(
+                {
+                    "role": "assistant",
+                    "content": f"I'm good ({nickname}), thanks. How can I help you today my friend?",
+                }
             )
 
+        if conversation_id:
+            conversation_filter = {
+                "conversation": conversation_id,
+                "conversation__user": user,
+            }
+            if wizard_id:
+                conversation_filter["conversation__prompt"] = wizard_id
+            messages_qs = Message.objects.filter(**conversation_filter).order_by("id")
+            for message in messages_qs:
+                messages.append({"role": "user", "content": message.question})
+                messages.append({"role": "assistant", "content": message.answer})
+            messages.append({"role": "user", "content": prompt})
+        else:
+            if wizard_id:
+                messages.append(
+                    {
+                        "role": "user",
+                        "content": wizard_id.hidden_prompt.replace(
+                            "[PROMPT]", prompt
+                        ).replace("[TARGETLANGUAGE]", "English"),
+                    }
+                )
+            else:
+                messages.append({"role": "user", "content": prompt})
+
+        response_status, response_data = self.send_prompt_request(messages=messages)
         if not response_status:
             raise serializers.ValidationError(response_data)
 
+        message = self._save_result(
+            prompt=prompt,
+            conversation=conversation_id,
+            result=response_data,
+            wizard=wizard_id,
+        )
         return [MessageSerializer(message, many=False).data]

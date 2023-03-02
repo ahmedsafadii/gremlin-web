@@ -65,7 +65,7 @@ def response(status=True, data=None, message=None, code=None):
     data = {
         "status": status,
         "data": data,
-        "message": message,
+        "message": str(message).capitalize() if message else "",
     }
 
     return JsonResponse(

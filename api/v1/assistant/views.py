@@ -51,15 +51,13 @@ class PublicLobbyListView(generics.ListAPIView):
     serializer_class = PublicLobbySerializer
 
     def get_queryset(self):
-        user = self.request.user
-        return (
-            Message.objects.filter(
-                conversation__show_in_public_lobby=True,
-                conversation__prompt__isnull=True,
-            )
-            .exclude(conversation__user=user)
-            .order_by("-created")[:1]
-        )
+        # user = self.request.user
+        return Message.objects.filter(
+            conversation__show_in_public_lobby=True,
+            conversation__prompt__isnull=True,
+        ).order_by("-created")[:1]
+
+    # .exclude(conversation__user=user)
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)

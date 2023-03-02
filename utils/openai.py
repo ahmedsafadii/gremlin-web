@@ -30,13 +30,15 @@ class OpenAIManager:
 
     def create_completion(self, messages=None):
         try:
-            print(messages)
-            response = openai.ChatCompletion.create(model=self.model, messages=messages)
-            # temperature = self.temperature,
-            # max_tokens = self.max_tokens,
-            # top_p = self.top_p,
-            # frequency_penalty = self.frequency_penalty,
-            # presence_penalty = self.presence_penalty,
+            response = openai.ChatCompletion.create(
+                model=self.model,
+                messages=messages,
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
+                top_p=self.top_p,
+                frequency_penalty=self.frequency_penalty,
+                presence_penalty=self.presence_penalty,
+            )
             return True, response
         except openai.error.RateLimitError:
             # TODO: I need to create a notification center for each key, to balance the usage

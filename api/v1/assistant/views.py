@@ -1,3 +1,5 @@
+import json
+
 from django.db.models import Q
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -10,6 +12,7 @@ from api.v1.assistant.serializer import (
     CreateMessageSerializer,
     PublicLobbySerializer,
     GetStartedHistorySerializer,
+    SaveConversationSerializer,
 )
 from core.models import Prompt, Conversation, Message
 from gremlin.middleware import response
@@ -53,6 +56,7 @@ class PublicLobbyListView(generics.ListAPIView):
     def get_queryset(self):
         # user = self.request.user
         return Message.objects.filter(
+            is_deleted=False,
             conversation__show_in_public_lobby=True,
             conversation__prompt__isnull=True,
         ).order_by("-created")[:1]
@@ -94,9 +98,65 @@ class DeleteConversationView(APIView):
 
     def post(self, request, *args, **kwargs):
         user = self.request.user
-        Conversation.objects.filter(user=user).update(is_deleted=True)
-        Message.objects.filter(conversation__user=user).update(is_deleted=True)
-        return response(True, None, _("All your conversations has been deleted."))
+        body = json.loads(request.body)
+        conversation_id = body.get("conversationId") or None
+
+        if conversation_id:
+            conversation = Conversation.objects.filter(user=user, id=conversation_id)
+            if not conversation.exists():
+                return response(False, None, _("This conversation is not exist"))
+            conversation.update(is_deleted=True)
+            Message.objects.filter(conversation_id=conversation_id).update(
+                is_deleted=True
+            )
+            return response(True, None, _("All your conversations has been deleted."))
+        else:
+            Conversation.objects.filter(user=user).update(is_deleted=True)
+            Message.objects.filter(conversation__user=user).update(is_deleted=True)
+            return response(True, None, _("All your conversations has been deleted."))
+
+
+class ClearConversationView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = self.request.user
+        body = json.loads(request.body)
+        conversation_id = body.get("conversationId") or None
+        if conversation_id:
+            messages = Message.objects.filter(
+                conversation_id=conversation_id, conversation__user=user
+            )
+            if messages.exists():
+                messages.update(is_deleted=True)
+                return response(True, None, _("All your messages has been deleted."))
+        return response(False, None, _("This conversation is not exists"))
+
+
+class SaveConversationView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = SaveConversationSerializer
+
+    def _get_conversation(self):
+        conversation_id = self.kwargs.get("conversation_id")
+        try:
+            return Conversation.objects.get(id=conversation_id)
+        except Conversation.DoesNotExist:
+            return None
+
+    def post(self, request, *args, **kwargs):
+
+        conversation = self._get_conversation()
+
+        serializer = self.serializer_class(
+            data=request.data,
+            context={"request": request, "conversation": conversation},
+        )
+        if serializer.is_valid():
+            data = serializer.save()
+            return response(True, data)
+        else:
+            return response(False, None, serializer.errors)
 
 
 class CreateMessageView(APIView):
@@ -124,6 +184,21 @@ class ConversationView(generics.ListAPIView):
         ).order_by("-updated")
 
     def get(self, request, *args, **kwargs):
+        try:
+            conversation_id = request.GET.get("conversationId", None)
+            user = request.user
+            if conversation_id:
+                conversation = Conversation.objects.filter(
+                    user=user, id=conversation_id
+                )
+                if not conversation.exists():
+                    return response(False, None, _("This conversation is not exist"))
+                return response(
+                    True, ConversationSerializer(conversation.first(), many=False).data
+                )
+        except json.JSONDecodeError:
+            pass
+
         return self.list(request, *args, **kwargs)
 
 

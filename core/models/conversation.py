@@ -34,6 +34,9 @@ class Conversation(models.Model):
     is_custom_title = models.BooleanField(
         default=False, blank=False, verbose_name=_("Is custom title")
     )
+    is_full_memory = models.BooleanField(
+        default=True, blank=False, verbose_name=_("Is full memory")
+    )
     is_deleted = models.BooleanField(
         default=False, blank=False, verbose_name=_("Is deleted")
     )
@@ -136,6 +139,7 @@ class MessageAdmin(admin.ModelAdmin):
     autocomplete_fields = ["conversation"]
     list_display = [
         "id",
+        "conversation",
         "question",
         "answer",
         "prompt_tokens_usage",

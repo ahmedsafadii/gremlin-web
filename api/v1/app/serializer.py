@@ -10,7 +10,6 @@ class OnBoardingSerializer(serializers.ModelSerializer):  # noqa
 
 
 class PlanSerializer(serializers.ModelSerializer):  # noqa
-    maxRequestPerHour = serializers.ReadOnlyField(source="max_request_per_hour")
     bundleId = serializers.ReadOnlyField(source="bundle_id")
     isSubscription = serializers.ReadOnlyField(source="is_subscription")
     promotionText = serializers.ReadOnlyField(source="promotion_text")
@@ -23,7 +22,6 @@ class PlanSerializer(serializers.ModelSerializer):  # noqa
             "title",
             "order",
             "tokens",
-            "maxRequestPerHour",
             "subTitle",
             "bundleId",
             "isSubscription",

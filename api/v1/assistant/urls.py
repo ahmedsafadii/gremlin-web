@@ -9,5 +9,9 @@ urlpatterns = [
     path("conversation", views.ConversationView.as_view()),
     path("create_message", views.CreateMessageView.as_view()),
     path("delete_all_conversation", views.DeleteConversationView.as_view()),
+    path("clear_conversation", views.ClearConversationView.as_view()),
+    path(
+        "save_conversation/<int:conversation_id>/", views.SaveConversationView.as_view()
+    ),
     path("messages/<int:conversation_id>/", views.MessageView.as_view()),
 ]

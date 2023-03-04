@@ -1,4 +1,6 @@
 import openai
+
+from gremlin.middleware import catch_custom_exception
 from gremlin.settings_dev import OPENAI_KEYS
 from utils.helper import get_setting_value
 
@@ -39,7 +41,7 @@ class OpenAIManager:
                 frequency_penalty=self.frequency_penalty,
                 presence_penalty=self.presence_penalty,
             )
-            return True, response
+            return True, response, False
         except openai.error.RateLimitError:
             # TODO: I need to create a notification center for each key, to balance the usage
             self.current_api_key += 1
@@ -50,9 +52,23 @@ class OpenAIManager:
                 return (
                     False,
                     "We have a high demand usage, please try again in a minute",
+                    False,
                 )
         except (Exception,) as e:
-            return False, str(e)
+            catch_custom_exception(e)
+            error_message = str(e)
+            if "length" in error_message and "maximum" in error_message:
+                return (
+                    False,
+                    f"An unknown error occurred with status code: {e.http_status}",
+                    True,
+                )
+
+            return (
+                False,
+                f"An unknown error occurred with status code: {e.http_status}",
+                False,
+            )
 
     @staticmethod
     def calculate_cost(prompt):

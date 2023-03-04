@@ -49,6 +49,10 @@ class FieldsEntity:
         "wizardId": _("Wizard Id"),
         "conversationId": _("Conversation Id"),
         "prompt": _("Prompt"),
+        "title": _("Title"),
+        "historyLength": _("History Length"),
+        "showInPublicLobby": _("Show in public lobby"),
+        "tokenUsageWarning": _("Token Usage Warning"),
     }
 
     codes = {
@@ -59,6 +63,7 @@ class FieldsEntity:
         "min_length": _("Min length"),
         "not_a_list": _("No list found"),
         "null": _("is required"),
+        "min_value": _("has wrong min value"),
     }
 
 

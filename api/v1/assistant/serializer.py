@@ -167,6 +167,7 @@ class PublicLobbySerializer(serializers.ModelSerializer):
 
 class MessageSerializer(serializers.ModelSerializer):
     conversationId = serializers.SerializerMethodField()
+    isTokenUsageWarning = serializers.SerializerMethodField()
     balance = serializers.SerializerMethodField()
 
     @staticmethod
@@ -181,14 +182,25 @@ class MessageSerializer(serializers.ModelSerializer):
     def get_conversationId(obj):
         return obj.conversation.id
 
+    @staticmethod
+    def get_isTokenUsageWarning(obj):
+        return obj.conversation.token_usage_warning <= obj.total_tokens
+
     class Meta:
         model = Message
-        fields = ["id", "question", "answer", "conversationId", "balance"]
+        fields = [
+            "id",
+            "question",
+            "answer",
+            "conversationId",
+            "balance",
+            "isTokenUsageWarning",
+        ]
 
 
 class ConversationSerializer(serializers.ModelSerializer):
     prompt = PromptsSerializer(many=False)
-    historyLength = serializers.ReadOnlyField(source="history_length")
+    historyLength = serializers.SerializerMethodField()
     showInPublicLobby = serializers.ReadOnlyField(source="show_in_public_lobby")
     tokenUsageWarning = serializers.ReadOnlyField(source="token_usage_warning")
     isCustomTitle = serializers.ReadOnlyField(source="is_custom_title")
@@ -202,6 +214,10 @@ class ConversationSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_tokenMaxUsage(obj):
         return 4000
+
+    @staticmethod
+    def get_historyLength(obj):
+        return obj.messages.count() if obj.is_full_memory else obj.history_length
 
     class Meta:
         model = Conversation
@@ -262,7 +278,8 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
         total_tokens = usage["total_tokens"]
 
         if conversation:
-            conversation.title = title
+            if not conversation.is_custom_title:
+                conversation.title = title
             conversation.save()
         else:
             conversation = Conversation.objects.create(
@@ -349,7 +366,12 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
             }
             if wizard_id:
                 conversation_filter["conversation__prompt"] = wizard_id
+                conversation_filter["is_deleted"] = False
+
             messages_qs = Message.objects.filter(**conversation_filter).order_by("id")
+            if not conversation_id.is_full_memory:
+                messages_qs = messages_qs[: conversation_id.history_length]
+
             for message in messages_qs:
                 messages.append({"role": "user", "content": message.question})
                 messages.append({"role": "assistant", "content": message.answer})
@@ -367,9 +389,14 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
             else:
                 messages.append({"role": "user", "content": prompt})
 
-        response_status, response_data = self.send_prompt_request(messages=messages)
+        response_status, response_data, is_hit_limit = self.send_prompt_request(
+            messages=messages
+        )
+        if is_hit_limit:
+            raise serializers.ValidationError({"general": "Reduce Memory Size"})
+
         if not response_status:
-            raise serializers.ValidationError(response_data)
+            raise serializers.ValidationError({"general": response_data})
 
         message = self._save_result(
             prompt=prompt,
@@ -378,3 +405,35 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
             wizard=wizard_id,
         )
         return [MessageSerializer(message, many=False).data]
+
+
+class SaveConversationSerializer(serializers.Serializer):  # noqa
+    title = serializers.CharField(required=True, allow_blank=False)
+    historyLength = serializers.IntegerField(required=True, min_value=1)
+    showInPublicLobby = serializers.BooleanField(required=True)
+    tokenUsageWarning = serializers.IntegerField(required=True, min_value=200)
+
+    def save(self, **kwargs):
+        validated_data = self.validated_data
+        title = validated_data.get("title")
+        historyLength = validated_data.get("historyLength")
+        showInPublicLobby = validated_data.get("showInPublicLobby")
+        tokenUsageWarning = validated_data.get("tokenUsageWarning")
+        conversation = self.context.get("conversation")
+        if not conversation:
+            raise serializers.ValidationError(
+                {"general": _("This Conversation is not available")}
+            )
+        conversation.title = title
+        conversation.is_custom_title = True
+        conversation.token_usage_warning = tokenUsageWarning
+        conversation.history_length = historyLength
+
+        if conversation.messages.count() <= historyLength:
+            conversation.is_full_memory = True
+        else:
+            conversation.is_full_memory = False
+
+        conversation.show_in_public_lobby = showInPublicLobby
+        conversation.save()
+        return ConversationSerializer(conversation, many=False).data

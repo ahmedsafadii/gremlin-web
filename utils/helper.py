@@ -1,10 +1,12 @@
 # helpers.py
 import os
+import time
 import uuid
 import jwt
-from datetime import timedelta
+from datetime import timedelta, datetime
 from django.utils.deconstruct import deconstructible
 from django.utils import timezone
+import requests
 from gremlin.settings_dev import APP_KEY_ID, APP_TEAM_ID, APP_BUNDLE_ID
 import hashlib
 
@@ -82,3 +84,82 @@ class UserColorGenerator:
 
         # Convert the new RGB values back to hex format
         return "{:02x}{:02x}{:02x}".format(r, g, b)
+
+
+def testAppStoreJWT():
+
+    headers = {"kid": "357Q2LDNYU", "typ": "JWT"}
+
+    token_gen_date = datetime.now()
+    exp = int(time.mktime((token_gen_date + timedelta(minutes=20)).timetuple()))
+
+    payload = {
+        "iss": "53936e5d-425f-477c-b35e-3a0307bd645e",
+        "exp": exp,
+        "aud": "appstoreconnect-v1",
+    }
+    print(payload)
+
+    key_path = os.path.join(
+        os.path.dirname(os.path.dirname(__file__)), "utils/keys/AppStore_357Q2LDNYU.p8"
+    )
+
+    with open(key_path, "r+b") as keyfile:
+        secret = keyfile.read()
+        client_secret = jwt.encode(
+            payload, secret, algorithm="ES256", headers=headers
+        ).decode("utf-8")
+        print("Bearer", client_secret)
+
+
+def testStoreKit():
+    headers = {"kid": "357Q2LDNYU", "typ": "JWT"}
+
+    token_gen_date = datetime.now()
+    exp = int(time.mktime((token_gen_date + timedelta(minutes=20)).timetuple()))
+
+    payload = {
+        "iss": "53936e5d-425f-477c-b35e-3a0307bd645e",
+        "exp": exp,
+        "aud": "appstoreconnect-v1",
+        "bid": APP_BUNDLE_ID,
+    }
+    print(payload)
+
+    key_path = os.path.join(
+        os.path.dirname(os.path.dirname(__file__)),
+        "utils/keys/AppStore_357Q2LDNYU.p8",
+    )
+
+    with open(key_path, "r+b") as keyfile:
+        secret = keyfile.read()
+        client_secret = jwt.encode(
+            payload, secret, algorithm="ES256", headers=headers
+        ).decode("utf-8")
+
+        url = "https://api.storekit-sandbox.itunes.apple.com/inApps/v1/subscriptions/2000000291031441"
+        headers = {
+            "Authorization": f"Bearer {client_secret}",
+            "Content-Type": "application/json",
+        }
+        response = requests.get(url, headers=headers)
+        data = response.json()
+        print(data)
+        # decoded1 = jwt.decode(
+        #     data["data"][0]["lastTransactions"][0]["signedTransactionInfo"],
+        #     options={"verify_signature": False},
+        # )
+        #
+        # decoded2 = jwt.decode(
+        #     data["data"][0]["lastTransactions"][0]["signedRenewalInfo"],
+        #     options={"verify_signature": False},
+        # )
+
+        # most_recent = None
+        # for test in data.get("signedTransactions"):
+        #     decoded = jwt.decode(test, options={"verify_signature": False})
+        #     expires_date = decoded.get("expiresDate")
+        #     if most_recent is None or expires_date > most_recent:
+        #         most_recent = expires_date
+        #         print(decoded)
+        # print(most_recent)

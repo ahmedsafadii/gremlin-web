@@ -31,7 +31,6 @@ class SubscriptionManager:
         }
         if data["status"] == 0:
             latest_receipt_info = data["latest_receipt_info"]
-            print(latest_receipt_info)
             original_transaction_id = latest_receipt_info[0]["original_transaction_id"]
             bundle_id = latest_receipt_info[0]["product_id"]
             expiration_date_ms = latest_receipt_info[0]["expires_date_ms"]

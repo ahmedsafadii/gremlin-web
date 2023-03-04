@@ -14,6 +14,12 @@ class AppleWebHook(models.Model):
     error = models.TextField(
         blank=False, null=False, default="", verbose_name=_("Error")
     )
+    is_processed = models.BooleanField(
+        default=False, null=False, blank=False, verbose_name=_("Is processed")
+    )
+    json_processed = models.TextField(
+        blank=False, null=False, default="", verbose_name=_("Error")
+    )
     created = models.DateTimeField(
         auto_now_add=True, null=True, verbose_name=_("Created")
     )

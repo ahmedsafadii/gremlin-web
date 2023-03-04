@@ -6,11 +6,14 @@ from api.v1.user.serializer import (
     UserSerializer,
     GoogleLoginSerializer,
     AppleLoginSerializer,
+    SubscriptionSerializer,
 )
-from core.models import Conversation, Message
-from core.models.user import UserTransaction
+from core.models import Conversation, Message, Plan
+from core.models.user import UserTransaction, UserPlan
 from gremlin.middleware import response
 from django.utils.translation import gettext_lazy as _
+
+from utils.appstore import SubscriptionManager, SubscriptionStatus
 
 
 class UpdateDeviceView(APIView):
@@ -113,3 +116,61 @@ class ClaimRatingGiftView(APIView):
     def post(self, request):  # noqa
         user = self._assign_user_gift()
         return response(True, UserSerializer(user, many=False).data)
+
+
+class SubscriptionView(APIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = SubscriptionSerializer
+
+    @staticmethod
+    def update_subscription_status(user, result):
+        status = result.get("status")
+        latest_receipt_info = result.get("latest_receipt_info")
+        expiration_date = result.get("expiration_date")
+        bundle_id = result.get("bundle_id")
+        original_transaction_id = result.get("original_transaction_id")
+        print(latest_receipt_info)
+        if latest_receipt_info is None:
+            return False, "Unable to validate the receipt"
+
+        plan = Plan.objects.get(bundle_id=bundle_id)
+        user_plan_object, user_plan_created = UserPlan.objects.update_or_create(
+            user=user, plan=plan
+        )
+        user_plan_object.type = SubscriptionStatus.VALID.value
+        user_plan_object.expire_in = expiration_date
+        user_plan_object.original_transaction_id = original_transaction_id
+        if status == SubscriptionStatus.VALID:
+            user_plan_object.is_active = True
+            user_plan_object.save()
+            return True, "You are now a Pro member of GenChat APP."
+        elif status == SubscriptionStatus.EXPIRED:
+            user_plan_object.is_active = False
+            user_plan_object.save()
+            return True, "Sorry but your subscription is expire."
+        elif status == SubscriptionStatus.TRIAL:
+            user_plan_object.is_active = True
+            user_plan_object.save()
+            return True, "You are now on trial period"
+        else:
+            user_plan_object.is_active = False
+            user_plan_object.save()
+            return True, "Your subscription is not valid"
+
+    def post(self, request):
+        serializer = self.serializer_class(
+            data=request.data,
+            context={"request": request},
+        )
+
+        if serializer.is_valid():
+            user = request.user
+            receipt_data = serializer.validated_data.get("receipt")
+            subscription_manager = SubscriptionManager()
+            validate_result = subscription_manager.validate_receipt(receipt_data)
+            status, message = self.update_subscription_status(
+                user=user, result=validate_result
+            )
+            return response(status, UserSerializer(user).data, message)
+        else:
+            return response(False, None, serializer.errors)

@@ -53,6 +53,7 @@ class FieldsEntity:
         "historyLength": _("History Length"),
         "showInPublicLobby": _("Show in public lobby"),
         "tokenUsageWarning": _("Token Usage Warning"),
+        "receipt_data": _("Receipt data"),
     }
 
     codes = {

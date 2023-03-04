@@ -46,7 +46,7 @@ class Tools(APIView):
 class AppleWebHookView(APIView):
     permission_classes = (AllowAny,)
 
-    def post(self, request):
+    def post(self, request):  # noqa
         try:
             get_body = dict(request.GET.items())
             post_body = request.data if request.data else {}

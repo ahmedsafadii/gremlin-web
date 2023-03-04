@@ -257,3 +257,7 @@ class AppleLoginSerializer(serializers.Serializer):  # noqa
         GoogleLoginSerializer.add_free_credits(user=user)
         Token.objects.update_or_create(user=user)
         return UserSerializer(user).data
+
+
+class SubscriptionSerializer(serializers.Serializer):  # noqa
+    receipt = serializers.CharField(required=True, allow_null=False)

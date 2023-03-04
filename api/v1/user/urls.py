@@ -9,4 +9,5 @@ urlpatterns = [
     path("delete_account", views.DeleteAccountView.as_view()),
     path("claim_rating_gift", views.ClaimRatingGiftView.as_view()),
     path("logout", views.LogoutView.as_view()),
+    path("validate_subscription", views.SubscriptionView.as_view()),
 ]

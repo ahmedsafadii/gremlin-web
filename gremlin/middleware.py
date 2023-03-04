@@ -22,7 +22,10 @@ except ImportError:
 
 class CheckKeyMiddleware(MiddlewareMixin):
     def process_request(self, request):  # noqa
-        if "/v1/" in request.META["PATH_INFO"]:
+        if (
+            "/v1/" in request.META["PATH_INFO"]
+            and "hooks" not in request.META["PATH_INFO"]
+        ):
             if "HTTP_GREMLIN_KEY" in request.META:
                 key = request.META["HTTP_GREMLIN_KEY"]
                 if key not in [IOS_KEY]:

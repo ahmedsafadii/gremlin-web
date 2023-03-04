@@ -89,13 +89,17 @@ class UserPlan(models.Model):
         null=True,
         verbose_name=_("Plan"),
     )
-    apple_transaction_id = models.BigIntegerField(
+    original_transaction_id = models.CharField(
+        max_length=255,
         blank=False,
         null=True,
-        verbose_name=_("Apple Transaction id"),
+        verbose_name=_("Original transaction id"),
     )
     expire_in = models.DateTimeField(
         blank=False, null=True, verbose_name=_("Expire in")
+    )
+    type = models.CharField(
+        max_length=255, blank=False, null=True, verbose_name=_("Type")
     )
     is_active = models.BooleanField(
         blank=False,
@@ -114,7 +118,7 @@ class UserPlan(models.Model):
         verbose_name_plural = _("Users Plans")
 
     def __str__(self):
-        return "%s %s" % (self.user.username, self.plan.title)
+        return "%s" % self.user.username
 
 
 @admin.register(UserPlan)

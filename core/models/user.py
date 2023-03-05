@@ -202,7 +202,7 @@ class UserTransaction(models.Model):
     is_free = models.BooleanField(
         blank=False, null=False, default=False, verbose_name=_("Is Free")
     )
-    amount = models.IntegerField(
+    amount = models.PositiveBigIntegerField(
         blank=False, default=0, null=True, verbose_name=_("Amount")
     )
     is_credit = models.BooleanField(
@@ -226,15 +226,14 @@ class UserTransaction(models.Model):
 
 @admin.register(UserTransaction)
 class UserTransactionAdmin(admin.ModelAdmin):
+    def has_add_permission(self, request):
+        return False
 
-    # def has_add_permission(self, request):
-    #     return False
-    #
-    # def has_change_permission(self, request, obj=None):
-    #     return False
-    #
-    # def has_delete_permission(self, request, obj=None):
-    #     return False
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
     autocomplete_fields = ("user",)
     search_fields = ["user__email"]

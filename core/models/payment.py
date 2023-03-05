@@ -14,7 +14,9 @@ class Plan(models.Model):
         max_length=255, blank=False, null=True, verbose_name=_("Title")
     )
     sub_title = models.TextField(blank=False, null=True, verbose_name=_("Subtitle"))
-    tokens = models.IntegerField(blank=False, null=True, verbose_name=_("Tokens"))
+    tokens = models.PositiveBigIntegerField(
+        blank=False, null=True, verbose_name=_("Tokens")
+    )
     max_request_per_hour = models.IntegerField(
         blank=False, null=True, verbose_name=_("Max request per hour")
     )

@@ -28,8 +28,8 @@ class Conversation(models.Model):
     title = models.CharField(
         max_length=255, blank=False, default="", verbose_name=_("Title")
     )
-    token_usage_warning = models.PositiveIntegerField(
-        blank=False, default=200, verbose_name=_("Token usage warning")
+    token_usage_warning = models.PositiveBigIntegerField(
+        blank=False, default=500, verbose_name=_("Token usage warning")
     )
     is_custom_title = models.BooleanField(
         default=False, blank=False, verbose_name=_("Is custom title")
@@ -40,11 +40,11 @@ class Conversation(models.Model):
     is_deleted = models.BooleanField(
         default=False, blank=False, verbose_name=_("Is deleted")
     )
-    history_length = models.IntegerField(
+    history_length = models.PositiveBigIntegerField(
         default=1, blank=False, null=False, verbose_name=_("Chat history length")
     )
     show_in_public_lobby = models.BooleanField(
-        default=False, null=False, blank=False, verbose_name=_("Is public lobby?")
+        default=True, null=False, blank=False, verbose_name=_("Is public lobby?")
     )
     created = models.DateTimeField(
         auto_now_add=True, null=True, verbose_name=_("Created")

@@ -56,7 +56,7 @@ class AppleWebHookView(APIView):
             hook.get_body = json.dumps(get_body)
             hook.post_body = json.dumps(post_body)
             hook.save()
-            check_apple_webhook(hook=hook.id)
+            check_apple_webhook(hook_id=hook.id)
             return response(True, "Response saved")
         except Exception as e:
             hook = AppleWebHook()

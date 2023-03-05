@@ -159,6 +159,7 @@ class GoogleLoginSerializer(serializers.Serializer):  # noqa
     def _create_user(user_id, email, first_name, last_name):
         username = "google-%s" % user_id
         user_object = User()
+        user_object.is_active = True
         user_object.username = username
         user_object.email = email
         user_object.first_name = first_name
@@ -235,6 +236,7 @@ class AppleLoginSerializer(serializers.Serializer):  # noqa
     def _create_user(user_id, email, first_name, last_name):
         username = "apple-%s" % user_id
         user_object = User()
+        user_object.is_active = True
         user_object.username = username
         user_object.email = email
         user_object.first_name = first_name
@@ -258,6 +260,9 @@ class AppleLoginSerializer(serializers.Serializer):  # noqa
             )
         GoogleLoginSerializer.add_free_credits(user=user)
         Token.objects.update_or_create(user=user)
+
+        user.is_active = True
+        user.save()
 
         if device_id:
             Device.objects.filter(device_id=device_id).update(user=user)

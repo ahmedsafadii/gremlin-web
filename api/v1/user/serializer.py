@@ -194,6 +194,7 @@ class GoogleLoginSerializer(serializers.Serializer):  # noqa
 
 class AppleLoginSerializer(serializers.Serializer):  # noqa
     accessToken = serializers.CharField(allow_blank=False, required=True)
+    deviceId = serializers.CharField(allow_blank=False, required=True)
 
     @staticmethod
     def _get_apple_user(access_token):
@@ -244,6 +245,7 @@ class AppleLoginSerializer(serializers.Serializer):  # noqa
     def save(self, **kwargs):
         access_token = self.validated_data.get("accessToken")
         apple_user_data = self._get_apple_user(access_token=access_token)
+        device_id = self.validated_data.get("deviceId")
 
         email = apple_user_data.get("email")
         user_id = str(apple_user_data.get("sub"))
@@ -256,6 +258,10 @@ class AppleLoginSerializer(serializers.Serializer):  # noqa
             )
         GoogleLoginSerializer.add_free_credits(user=user)
         Token.objects.update_or_create(user=user)
+
+        if device_id:
+            Device.objects.filter(device_id=device_id).update(user=user)
+
         return UserSerializer(user).data
 
 

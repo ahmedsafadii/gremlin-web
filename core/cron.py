@@ -118,4 +118,4 @@ def check_notification_type(expiration_date, notification_type, signed_renewal_i
     # DID_CHANGE_RENEWAL_PREF (UPGRADE) - then check - signed_renewal_info to key autoRenewStatus and product id = True
     # SUBSCRIBED (INITIAL_BUY) - then check - signed_renewal_info to key autoRenewStatus is_active = True
     # DID_RENEW - then check - signed_renewal_info to key autoRenewStatus is_active = True
-    # SUBSCRIBED (RESUBSCRIBE)
+    # SUBSCRIBED (RESUBSCRIBE) --

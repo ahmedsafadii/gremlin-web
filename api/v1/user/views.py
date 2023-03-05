@@ -177,7 +177,7 @@ class SubscriptionView(APIView):
                 )
             user_plan_object.is_active = True
             user_plan_object.save()
-            return True, "You are now on trial period"
+            return True, "You are now om a trial Pro member of GenChat APP."
         else:
             user_plan_object.is_active = False
             user_plan_object.save()

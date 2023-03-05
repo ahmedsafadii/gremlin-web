@@ -127,15 +127,16 @@ class SubscriptionView(APIView):
         status = result.get("status")
         latest_receipt_info = result.get("latest_receipt_info")
         expiration_date = result.get("expiration_date")
-        bundle_id = result.get("bundle_id")
+        product_id = result.get("product_id")
         original_transaction_id = result.get("original_transaction_id")
         if latest_receipt_info is None:
             return False, "Unable to validate the receipt"
 
-        plan = Plan.objects.get(bundle_id=bundle_id)
+        plan = Plan.objects.get(bundle_id=product_id)
         user_plan_object, user_plan_created = UserPlan.objects.update_or_create(
-            user=user, plan=plan
+            user=user, original_transaction_id=original_transaction_id
         )
+        user_plan_object.plan = plan
         user_plan_object.type = SubscriptionStatus.VALID.value
         user_plan_object.expire_in = expiration_date
         user_plan_object.original_transaction_id = original_transaction_id

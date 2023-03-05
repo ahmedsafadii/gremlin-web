@@ -32,13 +32,13 @@ class SubscriptionManager:
         if data["status"] == 0:
             latest_receipt_info = data["latest_receipt_info"]
             original_transaction_id = latest_receipt_info[0]["original_transaction_id"]
-            bundle_id = latest_receipt_info[0]["product_id"]
+            product_id = latest_receipt_info[0]["product_id"]
             expiration_date_ms = latest_receipt_info[0]["expires_date_ms"]
             expiration_date = datetime.fromtimestamp(int(expiration_date_ms) / 1000)
             result["latest_receipt_info"] = latest_receipt_info
             result["expiration_date_ms"] = expiration_date_ms
             result["expiration_date"] = expiration_date
-            result["bundle_id"] = bundle_id
+            result["product_id"] = product_id
             result["original_transaction_id"] = original_transaction_id
 
             # Check if the subscription is expired

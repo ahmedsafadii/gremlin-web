@@ -140,16 +140,19 @@ def check_notification_type(
                     .data.get("balance", {})
                     .get("balance", 0)
                 )
-                plan_tokens = user_plan.plan.tokens - balance
-                UserTransaction.objects.create_transaction(
-                    user=user_plan.user,
-                    amount=plan_tokens,
-                    is_credit=True,
-                    is_gift=False,
-                    is_free=False,
-                    notes=f"Reset tokens for {user_plan.original_transaction_id}",
-                    original_transaction_id=user_plan.original_transaction_id,
-                )
+
+                if balance != user_plan.plan.tokens:
+                    plan_tokens = user_plan.plan.tokens - balance
+                    UserTransaction.objects.create_transaction(
+                        user=user_plan.user,
+                        amount=plan_tokens,
+                        is_credit=True,
+                        is_gift=False,
+                        is_free=False,
+                        notes=f"Reset tokens for {user_plan.original_transaction_id}",
+                        original_transaction_id=user_plan.original_transaction_id,
+                    )
+
             return True, SubscriptionStatus.VALID.value
         else:
             return False, SubscriptionStatus.NOT_VALID.value

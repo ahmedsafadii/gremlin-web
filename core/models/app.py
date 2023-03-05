@@ -17,6 +17,19 @@ class AppleWebHook(models.Model):
     is_processed = models.BooleanField(
         default=False, null=False, blank=False, verbose_name=_("Is processed")
     )
+    original_transaction_id = models.CharField(
+        max_length=255,
+        blank=False,
+        null=True,
+        verbose_name=_("Original transaction id"),
+    )
+    notification_type = models.CharField(
+        max_length=255,
+        blank=False,
+        null=True,
+        verbose_name=_("Notification type"),
+    )
+
     json_processed = models.TextField(
         blank=False, null=False, default="", verbose_name=_("Error")
     )
@@ -35,10 +48,12 @@ class AppleWebHook(models.Model):
 
 @admin.register(AppleWebHook)
 class AppleWebHookAdmin(admin.ModelAdmin):
-    search_fields = ["id", "get_body", "post_body", "error"]
+    search_fields = ["id", "original_transaction_id"]
+    list_filter = ["notification_type", "is_processed"]
     list_display = [
         "id",
-        "get_body",
+        "notification_type",
+        "original_transaction_id",
         "is_processed",
         "created",
         "updated",

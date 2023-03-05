@@ -19,9 +19,11 @@ def check_subscription_validate():
 
 
 @kronos.register("* * * * *")
-def check_apple_webhook():
+def check_apple_webhook(hook_id=None):
     try:
         hooks = AppleWebHook.objects.filter(is_processed=False)
+        if hook_id:
+            hooks = hooks.filter(id=hook_id)
         for hook in hooks:
             post_body = json.loads(hook.post_body)
             signed_payload = post_body.get("signedPayload", None)
@@ -48,6 +50,13 @@ def check_apple_webhook():
                     check_status(
                         signed_payload, signed_transaction_info, signed_renewal_info
                     )
+                    notification_type = signed_payload.get("notificationType")
+                    originalTransactionId = signed_transaction_info.get(
+                        "originalTransactionId"
+                    )
+                    hook.notification_type = notification_type
+                    hook.original_transaction_id = originalTransactionId
+                    hook.json_processed = json.dumps(signed_payload, indent=4)
                     hook.is_processed = True
                     hook.save()
                 else:

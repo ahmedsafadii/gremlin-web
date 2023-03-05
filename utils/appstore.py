@@ -1,7 +1,7 @@
 import requests
 from datetime import datetime
 from enum import Enum
-from gremlin.settings_dev import IAP_PASSWORD
+from gremlin.settings_dev import IAP_PASSWORD, DEBUG
 
 
 class SubscriptionStatus(Enum):
@@ -14,7 +14,11 @@ class SubscriptionStatus(Enum):
 class SubscriptionManager:
     def __init__(self):
         self.password = IAP_PASSWORD
-        self.url = "https://sandbox.itunes.apple.com/verifyReceipt"
+        if DEBUG:
+            self.url = "https://sandbox.itunes.apple.com/verifyReceipt"
+        else:
+            self.url = "https://sandbox.itunes.apple.com/verifyReceipt"
+            # self.url = "https://buy.itunes.apple.com/verifyReceipt"
 
     def validate_receipt(self, receipt_data):
 

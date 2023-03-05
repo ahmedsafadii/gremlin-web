@@ -139,7 +139,14 @@ class UserPlanAdmin(admin.ModelAdmin):
 
 class UserTransactionManager(models.Manager):
     def create_transaction(
-        self, user, amount, is_credit, notes="", is_gift=False, is_free=False
+        self,
+        user,
+        amount,
+        is_credit,
+        original_transaction_id,
+        notes="",
+        is_gift=False,
+        is_free=False,
     ):
         transaction = self.create(
             user=user,
@@ -148,6 +155,7 @@ class UserTransactionManager(models.Manager):
             amount=amount,
             is_credit=is_credit,
             notes=notes,
+            original_transaction_id=original_transaction_id,
         )
         return transaction
 
@@ -181,6 +189,12 @@ class UserTransaction(models.Model):
         null=True,
         db_index=True,
         verbose_name=_("User"),
+    )
+    original_transaction_id = models.CharField(
+        max_length=255,
+        blank=False,
+        null=True,
+        verbose_name=_("Original transaction id"),
     )
     is_gift = models.BooleanField(
         blank=False, null=False, default=False, verbose_name=_("Is gift")

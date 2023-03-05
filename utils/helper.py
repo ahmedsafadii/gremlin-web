@@ -145,6 +145,7 @@ def testStoreKit():
         response = requests.get(url, headers=headers)
         data = response.json()
         print(data)
+
         # decoded1 = jwt.decode(
         #     data["data"][0]["lastTransactions"][0]["signedTransactionInfo"],
         #     options={"verify_signature": False},

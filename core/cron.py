@@ -4,8 +4,10 @@ import kronos
 import jwt
 from django.core.exceptions import ObjectDoesNotExist
 
+from api.v1.user.serializer import UserSerializer
 from core.models import UserPlan, Plan
 from core.models.app import AppleWebHook
+from core.models.user import UserTransaction
 from utils.appstore import SubscriptionStatus
 from django.utils import timezone
 
@@ -27,6 +29,7 @@ def check_apple_webhook(hook_id=None):
         for hook in hooks:
             post_body = json.loads(hook.post_body)
             signed_payload = post_body.get("signedPayload", None)
+
             if signed_payload:
                 signed_payload = jwt.decode(
                     signed_payload, options={"verify_signature": False}
@@ -78,7 +81,8 @@ def decode_jwt(token):
 
 def check_status(signed_payload, signed_transaction_info, signed_renewal_info):
     # Payload
-    notification_type = signed_payload.get("notificationType")
+    notification_type = signed_payload.get("notificationType", "")
+    sub_type = signed_payload.get("subtype", "")
 
     # Transaction info
     originalTransactionId = signed_transaction_info.get("originalTransactionId")
@@ -86,14 +90,16 @@ def check_status(signed_payload, signed_transaction_info, signed_renewal_info):
 
     expiration_date_ms = signed_transaction_info.get("expiresDate")
     expiration_date = datetime.fromtimestamp(int(expiration_date_ms) / 1000)
-    print(originalTransactionId)
+
     try:
         plan = Plan.objects.get(bundle_id=productId)
         user_plan = UserPlan.objects.get(original_transaction_id=originalTransactionId)
         is_active, user_plan_type = check_notification_type(
             expiration_date=expiration_date,
             notification_type=notification_type,
+            notification_sub_type=sub_type,
             signed_renewal_info=signed_renewal_info,
+            user_plan=user_plan,
         )
         user_plan.plan = plan
         user_plan.expire_in = expiration_date
@@ -104,21 +110,46 @@ def check_status(signed_payload, signed_transaction_info, signed_renewal_info):
         print(f"Notify: there is error in cronjob {str(e)}")
 
 
-def check_notification_type(expiration_date, notification_type, signed_renewal_info):
+def check_notification_type(
+    expiration_date,
+    notification_type,
+    notification_sub_type,
+    signed_renewal_info,
+    user_plan,
+):
 
-    if expiration_date < datetime.now():
-        return False, SubscriptionStatus.EXPIRED.value
-    print(notification_type)
+    # if expiration_date < datetime.now():
+    #     return False, SubscriptionStatus.EXPIRED.value
+
     if notification_type in [
         "AUTO_RENEW_ENABLED",
         "DID_CHANGE_RENEWAL_PREF",
         "DID_CHANGE_RENEWAL_STATUS",
-        "SUBSCRIBED",
         "DID_RENEW",
         "SUBSCRIBED",
     ]:
         auto_renew_status = bool(signed_renewal_info.get("autoRenewStatus"))
+
         if auto_renew_status:
+            if notification_type == "DID_RENEW" or notification_sub_type in [
+                "INITIAL_BUY",
+                "RESUBSCRIBE",
+            ]:
+                balance = (
+                    UserSerializer(user_plan.user)
+                    .data.get("balance", {})
+                    .get("balance", 0)
+                )
+                plan_tokens = user_plan.plan.tokens - balance
+                UserTransaction.objects.create_transaction(
+                    user=user_plan.user,
+                    amount=plan_tokens,
+                    is_credit=True,
+                    is_gift=False,
+                    is_free=False,
+                    notes=f"Reset tokens for {user_plan.original_transaction_id}",
+                    original_transaction_id=user_plan.original_transaction_id,
+                )
             return True, SubscriptionStatus.VALID.value
         else:
             return False, SubscriptionStatus.NOT_VALID.value

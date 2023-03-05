@@ -48,6 +48,8 @@ def check_apple_webhook():
                     check_status(
                         signed_payload, signed_transaction_info, signed_renewal_info
                     )
+                    hook.is_processed = True
+                    hook.save()
                 else:
                     print(
                         "Notify: signed_transaction_info or signed_renewal_info is missing"

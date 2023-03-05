@@ -122,8 +122,7 @@ class SubscriptionView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = SubscriptionSerializer
 
-    @staticmethod
-    def update_subscription_status(user, result):
+    def update_subscription_status(self, user, result):
         status = result.get("status")
         latest_receipt_info = result.get("latest_receipt_info")
         expiration_date = result.get("expiration_date")
@@ -140,7 +139,21 @@ class SubscriptionView(APIView):
         user_plan_object.type = SubscriptionStatus.VALID.value
         user_plan_object.expire_in = expiration_date
         user_plan_object.original_transaction_id = original_transaction_id
+
         if status == SubscriptionStatus.VALID:
+            if not user_plan_object.is_active:
+                amount = self._create_subscription_balance(
+                    user=user, plan_tokens=plan.tokens
+                )
+                UserTransaction.objects.create_transaction(
+                    user=user,
+                    amount=amount,
+                    is_credit=True,
+                    is_gift=False,
+                    is_free=False,
+                    notes=f"New tokens for {original_transaction_id}",
+                    original_transaction_id=original_transaction_id,
+                )
             user_plan_object.is_active = True
             user_plan_object.save()
             return True, "You are now a Pro member of GenChat APP."
@@ -149,6 +162,19 @@ class SubscriptionView(APIView):
             user_plan_object.save()
             return True, "Sorry but your subscription is expire."
         elif status == SubscriptionStatus.TRIAL:
+            if not user_plan_object.is_active:
+                amount = self._create_subscription_balance(
+                    user=user, plan_tokens=plan.tokens
+                )
+                UserTransaction.objects.create_transaction(
+                    user=user,
+                    amount=amount,
+                    is_credit=True,
+                    is_gift=False,
+                    is_free=False,
+                    notes=f"New tokens for {original_transaction_id}",
+                    original_transaction_id=original_transaction_id,
+                )
             user_plan_object.is_active = True
             user_plan_object.save()
             return True, "You are now on trial period"
@@ -156,6 +182,11 @@ class SubscriptionView(APIView):
             user_plan_object.is_active = False
             user_plan_object.save()
             return True, "Your subscription is not valid"
+
+    @staticmethod
+    def _create_subscription_balance(user, plan_tokens):
+        balance = UserSerializer(user).data.get("balance", {}).get("balance", 0)
+        return plan_tokens - balance
 
     def post(self, request):
         serializer = self.serializer_class(

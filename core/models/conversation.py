@@ -167,6 +167,7 @@ def my_post_save_function(sender, instance, created, **kwargs):
             total_tokens = user_balance
         UserTransaction.objects.create_transaction(
             user=instance.conversation.user,
+            original_transaction_id=None,
             amount=total_tokens,
             is_credit=False,
             notes=f"Cost for message id {instance.id}",

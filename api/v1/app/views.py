@@ -3,6 +3,7 @@ import json
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from api.v1.app.serializer import ToolsSerializer
+from core.cron import check_apple_webhook
 from core.models import Plan, OnBoarding, Topic
 from core.models.app import AppleWebHook
 from gremlin.middleware import response, catch_custom_exception
@@ -55,6 +56,7 @@ class AppleWebHookView(APIView):
             hook.get_body = json.dumps(get_body)
             hook.post_body = json.dumps(post_body)
             hook.save()
+            check_apple_webhook(hook=hook.id)
             return response(True, "Response saved")
         except Exception as e:
             hook = AppleWebHook()

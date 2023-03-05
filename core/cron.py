@@ -15,7 +15,19 @@ from django.utils import timezone
 @kronos.register("* * * * *")
 def check_subscription_validate():
     try:
-        UserPlan.objects.filter(expire_in__lt=timezone.now()).update(is_active=False)
+        users_plans = UserPlan.objects.filter(expire_in__lt=timezone.now())
+        users_plans.update(is_active=False)
+        for user_plan in users_plans:
+            balance = (
+                UserSerializer(user_plan.user).data.get("balance", {}).get("balance", 0)
+            )
+            UserTransaction.objects.create_transaction(
+                user=user_plan.user,
+                amount=balance,
+                is_credit=False,
+                notes=f"Tokens Expired for transaction {user_plan.original_transaction_id}",
+                original_transaction_id=user_plan.original_transaction_id,
+            )
     except ObjectDoesNotExist as e:
         print(f"Notify: there is error in cronjob {str(e)}")
 
@@ -118,8 +130,8 @@ def check_notification_type(
     user_plan,
 ):
 
-    # if expiration_date < datetime.now():
-    #     return False, SubscriptionStatus.EXPIRED.value
+    if expiration_date < datetime.now():
+        return False, SubscriptionStatus.EXPIRED.value
 
     if notification_type in [
         "AUTO_RENEW_ENABLED",

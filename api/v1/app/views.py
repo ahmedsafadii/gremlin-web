@@ -51,6 +51,7 @@ class AppleWebHookView(APIView):
             get_body = dict(request.GET.items())
             post_body = request.data if request.data else {}
             hook = AppleWebHook()
+            hook.is_processed = False
             hook.get_body = json.dumps(get_body)
             hook.post_body = json.dumps(post_body)
             hook.save()
@@ -58,6 +59,7 @@ class AppleWebHookView(APIView):
         except Exception as e:
             hook = AppleWebHook()
             hook.error = str(e)
+            hook.is_processed = False
             hook.save()
             catch_custom_exception(e, request)
             return response(False, str(e))

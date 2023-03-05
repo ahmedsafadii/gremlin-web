@@ -51,10 +51,13 @@ def check_apple_webhook(hook_id=None):
                         signed_payload, signed_transaction_info, signed_renewal_info
                     )
                     notification_type = signed_payload.get("notificationType")
+                    sub_type = signed_payload.get("subtype", "")
+
                     originalTransactionId = signed_transaction_info.get(
                         "originalTransactionId"
                     )
                     hook.notification_type = notification_type
+                    hook.notification_subtype = sub_type
                     hook.original_transaction_id = originalTransactionId
                     hook.json_processed = json.dumps(signed_payload, indent=4)
                     hook.is_processed = True

@@ -29,7 +29,12 @@ class AppleWebHook(models.Model):
         null=True,
         verbose_name=_("Notification type"),
     )
-
+    notification_subtype = models.CharField(
+        max_length=255,
+        blank=False,
+        null=True,
+        verbose_name=_("Notification subtype"),
+    )
     json_processed = models.TextField(
         blank=False, null=False, default="", verbose_name=_("Error")
     )
@@ -49,11 +54,12 @@ class AppleWebHook(models.Model):
 @admin.register(AppleWebHook)
 class AppleWebHookAdmin(admin.ModelAdmin):
     search_fields = ["id", "original_transaction_id"]
-    list_filter = ["notification_type", "is_processed"]
+    list_filter = ["notification_type", "is_processed", "notification_subtype"]
     list_display = [
         "id",
         "notification_type",
         "original_transaction_id",
+        "notification_subtype",
         "is_processed",
         "created",
         "updated",

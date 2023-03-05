@@ -39,8 +39,7 @@ class AppleWebHookAdmin(admin.ModelAdmin):
     list_display = [
         "id",
         "get_body",
-        "post_body",
-        "error",
+        "is_processed",
         "created",
         "updated",
     ]

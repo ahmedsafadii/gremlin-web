@@ -8,7 +8,7 @@ class SubscriptionStatus(Enum):
     VALID = "valid"
     TRIAL = "trial"
     EXPIRED = "expired"
-    NOT_VALID = "receipt validation error"
+    NOT_VALID = "not_valid"
 
 
 class SubscriptionManager:

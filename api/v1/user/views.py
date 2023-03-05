@@ -129,7 +129,6 @@ class SubscriptionView(APIView):
         expiration_date = result.get("expiration_date")
         bundle_id = result.get("bundle_id")
         original_transaction_id = result.get("original_transaction_id")
-        print(latest_receipt_info[0])
         if latest_receipt_info is None:
             return False, "Unable to validate the receipt"
 

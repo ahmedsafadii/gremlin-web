@@ -5,4 +5,3 @@ from .settings import Setting
 from .user import Device, UserPlan
 from .conversation import Conversation, Message
 from .payment import Plan
-from .twitter import TwitterAI, TwitterAccount

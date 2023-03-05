@@ -113,25 +113,6 @@ class Message(models.Model):
     def __str__(self):
         return self.conversation.title
 
-    def save(
-        self, force_insert=False, force_update=False, using=None, update_fields=None
-    ):
-        from core.models import TwitterAI
-
-        try:
-            old_instance = TwitterAI.objects.get(pk=self.pk)
-        except TwitterAI.DoesNotExist:
-            old_instance = None
-
-        if (
-            old_instance
-            and old_instance.is_deleted != self.is_deleted
-            and self.is_deleted
-        ):
-            TwitterAI.objects.filter(message_id=self.id).delete()
-
-        super().save(force_insert, force_update, using, update_fields)
-
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):

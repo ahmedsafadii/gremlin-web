@@ -40,6 +40,7 @@ class OpenAIManager:
                 top_p=self.top_p,
                 frequency_penalty=self.frequency_penalty,
                 presence_penalty=self.presence_penalty,
+                timeout=120,
             )
             return True, response, False
         except openai.error.RateLimitError:

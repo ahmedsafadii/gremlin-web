@@ -35,7 +35,7 @@ class SubTopic(models.Model):
     topic = models.ForeignKey(
         Topic,
         related_name="subtopics",
-        on_delete=models.RESTRICT,
+        on_delete=models.CASCADE,
         verbose_name=_("Topic"),
         null=True,
         blank=False,
@@ -76,7 +76,7 @@ class Prompt(models.Model):
     sub_topic = models.ForeignKey(
         SubTopic,
         related_name="prompts",
-        on_delete=models.RESTRICT,
+        on_delete=models.CASCADE,
         verbose_name=_("Sub Topic"),
         null=True,
         blank=False,

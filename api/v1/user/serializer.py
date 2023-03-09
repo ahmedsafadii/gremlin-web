@@ -58,7 +58,7 @@ class UserSerializer(serializers.ModelSerializer):
     nickName = serializers.SerializerMethodField()
     balance = serializers.SerializerMethodField()
     claimGift = serializers.SerializerMethodField()
-    hasPlan = serializers.SerializerMethodField()
+    userPlan = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -72,12 +72,20 @@ class UserSerializer(serializers.ModelSerializer):
             "nickName",
             "balance",
             "claimGift",
-            "hasPlan",
+            "userPlan",
         ]
 
     @staticmethod
-    def get_hasPlan(obj):
-        return obj.plans.filter(is_active=True).exists()
+    def get_userPlan(obj):
+        user_plan = obj.plans.filter(is_active=True)
+        if user_plan.exists():
+            user_plan = user_plan.first()
+            return {
+                "isActive": user_plan.is_active,
+                "planId": user_plan.plan.id,
+                "expireDate": user_plan.expire_in,
+            }
+        return {"isActive": False}
 
     @staticmethod
     def get_claimGift(obj):

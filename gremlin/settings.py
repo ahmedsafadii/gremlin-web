@@ -43,11 +43,11 @@ INSTALLED_APPS += [
     "rest_framework.authtoken",
     "kronos",
     "adminsortable2",
-    "silk",
+    # "silk",
 ]
 
 MIDDLEWARE = [
-    "silk.middleware.SilkyMiddleware",
+    # "silk.middleware.SilkyMiddleware",
     "gremlin.middleware.CheckKeyMiddleware",
     "gremlin.middleware.CustomMiddleware",
     "django.middleware.security.SecurityMiddleware",

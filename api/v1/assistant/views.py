@@ -58,10 +58,7 @@ class PublicLobbyListView(generics.ListAPIView):
         return Message.objects.filter(
             is_deleted=False,
             conversation__show_in_public_lobby=True,
-            conversation__prompt__isnull=True,
         ).order_by("-created")[:1]
-
-    # .exclude(conversation__user=user)
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)

@@ -155,6 +155,14 @@ class PromptsSerializer(serializers.ModelSerializer):
 
 class PublicLobbySerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
+    question = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_question(obj):
+        if obj.conversation.prompt:
+            return f"Prompt Wizard: {obj.conversation.prompt.title}\n {obj.question}"
+        else:
+            return obj.question
 
     @staticmethod
     def get_user(obj):

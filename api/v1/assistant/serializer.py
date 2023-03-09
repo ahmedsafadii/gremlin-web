@@ -160,7 +160,7 @@ class PublicLobbySerializer(serializers.ModelSerializer):
     @staticmethod
     def get_question(obj):
         if obj.conversation.prompt:
-            return f"Prompt Wizard: {obj.conversation.prompt.title}\n {obj.question}"
+            return f"Prompt Wizard: {obj.conversation.prompt.title}\n\n{obj.question}"
         else:
             return obj.question
 

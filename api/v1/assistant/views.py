@@ -78,7 +78,7 @@ class PromptsListView(generics.ListAPIView):
         prompts = Prompt.objects.filter(is_active=True)
 
         if topic:
-            prompts = prompts.filter(sub_topic__topic_id=topic)
+            prompts = prompts.filter(topic_id=topic)
         if q:
             prompts = prompts.filter(
                 Q(title__icontains=q)

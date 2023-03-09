@@ -1,5 +1,5 @@
 import json
-from .models import Topic, Prompt, SubTopic
+from .models import Topic, Prompt
 import os
 from django.conf import settings
 
@@ -19,11 +19,8 @@ with open(file_path) as f:
             prompt = p["Prompt"]
             description = p["Teaser"]
             topic_object, topic_created = Topic.objects.update_or_create(title=category)
-            sub_topic_object, sub_topic_created = SubTopic.objects.update_or_create(
-                title=community[0], topic=topic_object
-            )
             new_prompt = Prompt()
-            new_prompt.sub_topic = sub_topic_object
+            new_prompt.topic = topic_object
             new_prompt.placeholder = placeholder
             new_prompt.title = title
             new_prompt.is_active = False

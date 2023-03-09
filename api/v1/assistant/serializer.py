@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from api.v1.app.serializer import SubTopicSerializer
+
+from api.v1.app.serializer import TopicSerializer
 from api.v1.user.serializer import UserSerializer
 from core.models import (
     GetStartedQuestion,
@@ -145,7 +146,7 @@ class GetStartedSerializer(serializers.Serializer):  # noqa
 
 
 class PromptsSerializer(serializers.ModelSerializer):
-    topic = SubTopicSerializer(many=False, source="sub_topic")
+    topic = TopicSerializer(many=False, source="sub_topic")
 
     class Meta:
         model = Prompt

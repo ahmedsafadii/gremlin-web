@@ -78,7 +78,7 @@ class ConversationAdmin(admin.ModelAdmin):
 class Message(models.Model):
     conversation = models.ForeignKey(
         Conversation,
-        on_delete=models.RESTRICT,
+        on_delete=models.CASCADE,
         related_name="messages",
         blank=False,
         null=True,

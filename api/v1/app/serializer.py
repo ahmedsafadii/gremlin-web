@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.models import Plan, OnBoarding, SubTopic, Topic
+from core.models import Plan, OnBoarding, Topic
 from utils.helper import get_setting_value
 
 
@@ -56,11 +56,3 @@ class TopicSerializer(serializers.ModelSerializer):  # noqa
     class Meta:
         model = Topic
         fields = ["id", "title"]
-
-
-class SubTopicSerializer(serializers.ModelSerializer):  # noqa
-    category = TopicSerializer(many=False, source="topic")
-
-    class Meta:
-        model = SubTopic
-        fields = ["id", "title", "category"]

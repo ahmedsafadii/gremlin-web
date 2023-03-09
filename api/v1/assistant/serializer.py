@@ -146,7 +146,7 @@ class GetStartedSerializer(serializers.Serializer):  # noqa
 
 
 class PromptsSerializer(serializers.ModelSerializer):
-    topic = TopicSerializer(many=False, source="sub_topic")
+    topic = TopicSerializer(many=False)
 
     class Meta:
         model = Prompt

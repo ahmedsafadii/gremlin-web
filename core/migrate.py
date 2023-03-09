@@ -10,6 +10,7 @@ file_path = os.path.join(current_dir, "Prompts.json")
 with open(file_path) as f:
     data = json.load(f)
     Topic.objects.all().delete()
+    Prompt.objects.all().delete()
     for p in data:
         if int(p["Usages"]) > 5000:
             category = p["Category"]

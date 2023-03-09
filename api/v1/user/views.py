@@ -75,7 +75,7 @@ class DeleteAccountView(APIView):
             user = self.request.user
             user.is_active = False
             user.save()
-            user.conversations.delete()
+            user.conversations.all().delete()
             user.auth_token.delete()
             user.devices.all().delete()
             conversations = Conversation.objects.select_related("user").filter(

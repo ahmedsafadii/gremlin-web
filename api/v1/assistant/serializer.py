@@ -330,7 +330,7 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
                 {
                     "role": "system",
                     "content": get_setting_value(key="wizard_chat_prompt").replace(
-                        "[WIZARD]", wizard_id.sub_topic.title
+                        "[WIZARD]", wizard_id.topic.title
                     ),
                 }
             )

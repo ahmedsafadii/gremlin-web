@@ -145,11 +145,12 @@ def check_notification_type(
         "SUBSCRIBED",
     ]:
         auto_renew_status = bool(signed_renewal_info.get("autoRenewStatus"))
-
         if auto_renew_status:
             if notification_type == "DID_RENEW" or notification_sub_type in [
                 "INITIAL_BUY",
                 "RESUBSCRIBE",
+                "DOWNGRADE",
+                "UPGRADE",
             ]:
                 balance = (
                     UserSerializer(user_plan.user)

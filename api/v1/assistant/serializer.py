@@ -275,7 +275,7 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
     def send_prompt_request(messages):
         from utils.openai import OpenAIManager
 
-        open_ai_manager = OpenAIManager(is_general_chat=True)
+        open_ai_manager = OpenAIManager()
         return open_ai_manager.create_completion(messages=messages)
 
     def _save_result(self, prompt, conversation, result, wizard=None):
@@ -362,7 +362,7 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
                 conversation_filter["conversation__prompt"] = wizard_id
                 conversation_filter["is_deleted"] = False
 
-            messages_qs = Message.objects.filter(**conversation_filter).order_by("id")
+            messages_qs = Message.objects.filter(**conversation_filter).order_by("-id")
             if not conversation_id.is_full_memory:
                 messages_qs = messages_qs[: conversation_id.history_length]
 

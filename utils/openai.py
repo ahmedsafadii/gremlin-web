@@ -14,7 +14,6 @@ class OpenAIManager:
         top_p=float(get_setting_value("top_p")),
         frequency_penalty=float(get_setting_value("frequency_penalty")),
         presence_penalty=float(get_setting_value("presence_penalty")),
-        is_general_chat=True,
     ):
 
         self.api_keys = OPENAI_KEYS
@@ -24,7 +23,6 @@ class OpenAIManager:
         self.top_p = top_p
         self.frequency_penalty = frequency_penalty
         self.presence_penalty = presence_penalty
-        self.is_general_chat = is_general_chat
         self.current_api_key = 0
         self.model_messages = []
 

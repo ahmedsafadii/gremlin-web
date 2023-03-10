@@ -4,9 +4,11 @@ from utils.helper import get_setting_value
 
 
 class OnBoardingSerializer(serializers.ModelSerializer):  # noqa
+    subTitle = serializers.ReadOnlyField(source="sub_title")
+
     class Meta:
         model = OnBoarding
-        fields = ["id", "title", "image"]
+        fields = ["id", "title", "subTitle", "image"]
 
 
 class PlanSerializer(serializers.ModelSerializer):  # noqa

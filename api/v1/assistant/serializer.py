@@ -13,7 +13,6 @@ from core.models import (
 )
 from django.utils.translation import gettext_lazy as _
 from utils.helper import get_setting_value
-from utils.openai import OpenAIManager
 
 
 class GetStartedHistorySerializer(serializers.Serializer):  # noqa
@@ -274,6 +273,8 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
 
     @staticmethod
     def send_prompt_request(messages):
+        from utils.openai import OpenAIManager
+
         open_ai_manager = OpenAIManager(is_general_chat=True)
         return open_ai_manager.create_completion(messages=messages)
 

@@ -3,11 +3,11 @@ from datetime import datetime
 import kronos
 import jwt
 from django.core.exceptions import ObjectDoesNotExist
-
 from api.v1.user.serializer import UserSerializer
 from core.models import UserPlan, Plan
 from core.models.app import AppleWebHook
 from core.models.user import UserTransaction
+from gremlin.middleware import catch_custom_exception
 from utils.appstore import SubscriptionStatus
 from django.utils import timezone
 
@@ -29,7 +29,7 @@ def check_subscription_validate():
                 original_transaction_id=user_plan.original_transaction_id,
             )
     except ObjectDoesNotExist as e:
-        print(f"Notify: there is error in cronjob {str(e)}")
+        catch_custom_exception(e)
 
 
 @kronos.register("* * * * *")
@@ -88,7 +88,7 @@ def check_apple_webhook(hook_id=None):
             else:
                 print("Notify: the signed_payload is wrong")
     except (Exception,) as e:
-        print(f"Notify: there is error in cronjob {str(e)}")
+        catch_custom_exception(e)
 
 
 def decode_jwt(token):
@@ -109,21 +109,24 @@ def check_status(signed_payload, signed_transaction_info, signed_renewal_info):
 
     try:
         plan = Plan.objects.get(bundle_id=productId)
-        user_plan = UserPlan.objects.get(original_transaction_id=originalTransactionId)
-        is_active, user_plan_type = check_notification_type(
-            expiration_date=expiration_date,
-            notification_type=notification_type,
-            notification_sub_type=sub_type,
-            signed_renewal_info=signed_renewal_info,
-            user_plan=user_plan,
+        user_plan = UserPlan.objects.filter(
+            original_transaction_id=originalTransactionId
         )
-        user_plan.plan = plan
-        user_plan.expire_in = expiration_date
-        user_plan.is_active = is_active
-        user_plan.type = user_plan_type
-        user_plan.save()
+        for user_p in user_plan:
+            is_active, user_plan_type = check_notification_type(
+                expiration_date=expiration_date,
+                notification_type=notification_type,
+                notification_sub_type=sub_type,
+                signed_renewal_info=signed_renewal_info,
+                user_plan=user_p,
+            )
+            user_p.plan = plan
+            user_p.expire_in = expiration_date
+            user_p.is_active = is_active
+            user_p.type = user_plan_type
+            user_p.save()
     except (Exception,) as e:
-        print(f"Notify: there is error in cronjob {str(e)}")
+        catch_custom_exception(e)
 
 
 def check_notification_type(

@@ -29,7 +29,7 @@ class Conversation(models.Model):
         max_length=255, blank=False, default="", verbose_name=_("Title")
     )
     token_usage_warning = models.PositiveBigIntegerField(
-        blank=False, default=500, verbose_name=_("Token usage warning")
+        blank=False, default=2000, verbose_name=_("Token usage warning")
     )
     is_custom_title = models.BooleanField(
         default=False, blank=False, verbose_name=_("Is custom title")

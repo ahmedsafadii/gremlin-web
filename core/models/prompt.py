@@ -85,6 +85,8 @@ class PromptAdmin(admin.ModelAdmin):
             row.save()
 
     search_fields = ["title", "content"]
+    autocomplete_fields = ["topic"]
+    list_filter = ["topic"]
     list_editable = ["is_active"]
     list_display = [
         "id",

@@ -71,6 +71,10 @@ def check_apple_webhook(hook_id=None):
                     originalTransactionId = signed_transaction_info.get(
                         "originalTransactionId"
                     )
+                    signed_payload["data"][
+                        "signedTransactionInfo"
+                    ] = signed_transaction_info
+                    signed_payload["data"]["signedRenewalInfo"] = signed_renewal_info
                     hook.notification_type = notification_type
                     hook.notification_subtype = sub_type
                     hook.original_transaction_id = originalTransactionId

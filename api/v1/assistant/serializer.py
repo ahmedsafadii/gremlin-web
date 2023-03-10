@@ -337,34 +337,18 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
             messages.append(
                 {
                     "role": "system",
-                    "content": get_setting_value(key="wizard_chat_prompt").replace(
-                        "[WIZARD]", wizard_id.topic.title
-                    ),
-                }
-            )
-            messages.append(
-                {
-                    "role": "assistant",
-                    "content": f"Hello ({nickname}), how can I help you today?",
+                    "content": get_setting_value(key="wizard_chat_prompt")
+                    .replace("[WIZARD]", wizard_id.topic.title)
+                    .replace("[nickname]", nickname),
                 }
             )
         else:
             messages.append(
                 {
                     "role": "system",
-                    "content": get_setting_value(key="general_chat_prompt"),
-                }
-            )
-            messages.append(
-                {
-                    "role": "user",
-                    "content": f"Hello, my name is {nickname}, who are you?",
-                }
-            )
-            messages.append(
-                {
-                    "role": "assistant",
-                    "content": f"I'm good ({nickname}), thanks. How can I help you today my friend?",
+                    "content": get_setting_value(key="general_chat_prompt").replace(
+                        "[nickname]", nickname
+                    ),
                 }
             )
 

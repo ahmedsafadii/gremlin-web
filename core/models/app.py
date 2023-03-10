@@ -36,7 +36,7 @@ class AppleWebHook(models.Model):
         verbose_name=_("Notification subtype"),
     )
     json_processed = models.TextField(
-        blank=False, null=False, default="", verbose_name=_("Error")
+        blank=False, null=False, default="", verbose_name=_("Json Processed")
     )
     created = models.DateTimeField(
         auto_now_add=True, null=True, verbose_name=_("Created")

@@ -202,7 +202,7 @@ class UserTransaction(models.Model):
     is_free = models.BooleanField(
         blank=False, null=False, default=False, verbose_name=_("Is Free")
     )
-    amount = models.PositiveBigIntegerField(
+    amount = models.BigIntegerField(
         blank=False, default=0, null=True, verbose_name=_("Amount")
     )
     is_credit = models.BooleanField(

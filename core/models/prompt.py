@@ -1,9 +1,15 @@
+from adminsortable2.admin import SortableAdminMixin
 from django.contrib import admin
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
 class Topic(models.Model):
+    order = models.PositiveIntegerField(
+        default=0,
+        blank=False,
+        null=False,
+    )
     title = models.CharField(
         max_length=255, blank=False, null=False, default="", verbose_name=_("Title")
     )
@@ -15,13 +21,14 @@ class Topic(models.Model):
     class Meta:
         verbose_name = _("Topic")
         verbose_name_plural = _("Topics")
+        ordering = ["order"]
 
     def __str__(self):
         return self.title
 
 
 @admin.register(Topic)
-class TopicAdmin(admin.ModelAdmin):
+class TopicAdmin(SortableAdminMixin, admin.ModelAdmin):
     search_fields = ["title"]
     list_display = [
         "id",

@@ -25,7 +25,7 @@ class Tools(APIView):
             .order_by("order")
         )
         on_boarding_qs = OnBoarding.objects.only("id", "title", "image")
-        topics_qs = Topic.objects.only("id", "title")
+        topics_qs = Topic.objects.only("id", "title").order_by("-order")
         return on_boarding_qs, subscription_qs, topics_qs, as_you_go_qs
 
     def get(self, request):  # noqa

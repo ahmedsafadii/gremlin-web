@@ -42,7 +42,6 @@ class Plan(models.Model):
     updated = models.DateTimeField(auto_now=True, null=True, verbose_name=_("Updated"))
 
     class Meta:
-        unique_together = []
         verbose_name = _("Plan")
         verbose_name_plural = _("Plans")
         ordering = ["order"]

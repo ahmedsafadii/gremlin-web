@@ -43,15 +43,17 @@ SECURE_SSL_REDIRECT = True
 
 CSRF_COOKIE_SECURE = True
 
-SILKY_PYTHON_PROFILER = True
-SILKY_PYTHON_PROFILER_BINARY = True
-SILKY_ANALYZE_QUERIES = True
+# SILKY_PYTHON_PROFILER = True
+#
+# SILKY_PYTHON_PROFILER_BINARY = True
+#
+# SILKY_ANALYZE_QUERIES = True
 
 if not DEBUG:
     sentry_sdk.init(
         dsn=env("SENTRY_DSN"),
         integrations=[DjangoIntegration()],
-        traces_sample_rate=1.0,
+        traces_sample_rate=0.1,
         send_default_pii=True,
     )
 

@@ -83,7 +83,7 @@ class PromptsListView(generics.ListAPIView):
                 | Q(content__icontains=q)
                 | Q(content__icontains=q)
             )
-        prompts = prompts.order_by("-is_feature", "-created")
+        prompts = prompts.order_by("-is_feature", "order")
         return prompts
 
     def get(self, request, *args, **kwargs):

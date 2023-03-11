@@ -15,7 +15,7 @@ class UpdateDeviceSerializer(serializers.Serializer):  # noqa
     deviceId = serializers.CharField(required=True, allow_blank=False)
     platform = serializers.CharField(required=True)
     language = serializers.CharField(required=True)
-    oneSignalId = serializers.CharField(required=False, allow_blank=True)
+    oneSignal = serializers.CharField(required=False, allow_blank=True)
     appVersion = serializers.CharField(required=True, allow_blank=False)
     appBuild = serializers.CharField(required=True, allow_blank=False)
     latitude = serializers.CharField(required=False, allow_blank=True)
@@ -31,7 +31,7 @@ class UpdateDeviceSerializer(serializers.Serializer):  # noqa
         GetStartedBot.objects.update_or_create(device=device_object)
         device_object.platform = data.get("platform", "")
         device_object.language = data.get("language", "")
-        device_object.onesignal_id = data.get("oneSignalId", "")
+        device_object.onesignal = data.get("oneSignal", "")
         device_object.app_version = data.get("appVersion", "")
         device_object.app_build = data.get("appBuild", "")
         device_object.sessions = F("sessions") + 1

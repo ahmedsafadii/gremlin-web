@@ -18,6 +18,9 @@ class Device(models.Model):
     device_id = models.CharField(
         max_length=255, blank=False, null=True, verbose_name=_("Device id")
     )
+    onesignal = models.CharField(
+        max_length=255, blank=False, null=True, verbose_name=_("OneSignal id")
+    )
     platform = models.CharField(
         max_length=255, blank=True, null=True, verbose_name=_("Platform")
     )

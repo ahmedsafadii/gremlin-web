@@ -71,7 +71,7 @@ class OnBoarding(models.Model):
         max_length=255, blank=False, null=False, default="", verbose_name=_("Title")
     )
     sub_title = models.TextField(
-        blank=False, null=False, default="", verbose_name=_("Subtitle")
+        blank=True, null=False, default="", verbose_name=_("Subtitle")
     )
     image = models.FileField(
         upload_to=RandomFileName("on_boarding"),

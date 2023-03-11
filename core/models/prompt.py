@@ -39,6 +39,11 @@ class TopicAdmin(SortableAdminMixin, admin.ModelAdmin):
 
 
 class Prompt(models.Model):
+    order = models.PositiveIntegerField(
+        default=0,
+        blank=False,
+        null=False,
+    )
     title = models.TextField(
         blank=False, null=False, default="", verbose_name=_("Title")
     )
@@ -76,13 +81,14 @@ class Prompt(models.Model):
     class Meta:
         verbose_name = _("Prompt")
         verbose_name_plural = _("Prompts")
+        ordering = ["order"]
 
     def __str__(self):
         return self.title
 
 
 @admin.register(Prompt)
-class PromptAdmin(admin.ModelAdmin):
+class PromptAdmin(SortableAdminMixin, admin.ModelAdmin):
     actions = ["deactivate_selected_prompts"]
 
     @admin.action(description=_("Deactivate selected prompts"))

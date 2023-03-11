@@ -125,7 +125,7 @@ class ClearConversationView(APIView):
                 conversation_id=conversation_id, conversation__user=user
             )
             if messages.exists():
-                messages.update(is_deleted=True)
+                messages.delete()
                 return response(True, None, _("All your messages has been deleted."))
         return response(False, None, _("This conversation is not exists"))
 

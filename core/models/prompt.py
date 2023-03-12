@@ -64,6 +64,9 @@ class Prompt(models.Model):
         default="",
         verbose_name=_("Placeholder"),
     )
+    system_prompt = models.TextField(
+        blank=True, null=False, default="", verbose_name=_("System prompt")
+    )
     hidden_prompt = models.TextField(
         blank=False, null=False, default="", verbose_name=_("Hidden prompt")
     )

@@ -335,14 +335,24 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
 
         messages = []
         if wizard_id:
-            messages.append(
-                {
-                    "role": "system",
-                    "content": get_setting_value(key="wizard_chat_prompt")
-                    .replace("[WIZARD]", wizard_id.topic.title)
-                    .replace("[nickname]", nickname),
-                }
-            )
+            if wizard_id.system_prompt and wizard_id.system_prompt != "":
+                messages.append(
+                    {
+                        "role": "system",
+                        "content": wizard_id.system_prompt.replace(
+                            "[nickname]", nickname
+                        ),
+                    }
+                )
+            else:
+                messages.append(
+                    {
+                        "role": "system",
+                        "content": get_setting_value(key="wizard_chat_prompt")
+                        .replace("[WIZARD]", wizard_id.topic.title)
+                        .replace("[nickname]", nickname),
+                    }
+                )
         else:
             messages.append(
                 {

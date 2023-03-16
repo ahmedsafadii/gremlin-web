@@ -21,13 +21,14 @@ def check_subscription_validate():
             balance = (
                 UserSerializer(user_plan.user).data.get("balance", {}).get("balance", 0)
             )
-            UserTransaction.objects.create_transaction(
-                user=user_plan.user,
-                amount=balance,
-                is_credit=False,
-                notes=f"Tokens Expired for transaction {user_plan.original_transaction_id}",
-                original_transaction_id=user_plan.original_transaction_id,
-            )
+            if int(balance) > 0:
+                UserTransaction.objects.create_transaction(
+                    user=user_plan.user,
+                    amount=balance,
+                    is_credit=False,
+                    notes=f"Tokens Expired for transaction {user_plan.original_transaction_id}",
+                    original_transaction_id=user_plan.original_transaction_id,
+                )
     except ObjectDoesNotExist as e:
         catch_custom_exception(e)
 

@@ -17,8 +17,7 @@ class SubscriptionManager:
         if DEBUG:
             self.url = "https://sandbox.itunes.apple.com/verifyReceipt"
         else:
-            self.url = "https://sandbox.itunes.apple.com/verifyReceipt"
-            # self.url = "https://buy.itunes.apple.com/verifyReceipt"
+            self.url = "https://buy.itunes.apple.com/verifyReceipt"
 
     def validate_receipt(self, receipt_data):
 

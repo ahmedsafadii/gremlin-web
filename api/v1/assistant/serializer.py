@@ -385,9 +385,9 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
                 messages.append(
                     {
                         "role": "user",
-                        "content": wizard_id.hidden_prompt.replace(
-                            "[PROMPT]", prompt
-                        ).replace("[TARGETLANGUAGE]", "English"),
+                        "content": wizard_id.hidden_prompt.replace("[PROMPT]", prompt)
+                        .replace("[TARGETLANGUAGE]", "English")
+                        .replace("[nickname]", nickname),
                     }
                 )
             else:

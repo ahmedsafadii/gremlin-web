@@ -18,6 +18,8 @@ from core.models import Prompt, Conversation, Message
 from gremlin.middleware import response
 from django.utils.translation import gettext_lazy as _
 
+from utils.helper import get_setting_value
+
 
 class GetStartedView(APIView):
     permission_classes = [AllowAny]
@@ -55,9 +57,10 @@ class PublicLobbyListView(generics.ListAPIView):
 
     def get_queryset(self):
         # user = self.request.user
+        loopy = bool(get_setting_value("show_in_public_lobby"))
         return Message.objects.filter(
             is_deleted=False,
-            conversation__show_in_public_lobby=True,
+            conversation__show_in_public_lobby=loopy,
         ).order_by("-created")[:1]
 
     def get(self, request, *args, **kwargs):

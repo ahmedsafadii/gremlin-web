@@ -58,10 +58,13 @@ class PublicLobbyListView(generics.ListAPIView):
     def get_queryset(self):
         # user = self.request.user
         loopy = bool(get_setting_value("show_in_public_lobby"))
-        return Message.objects.filter(
-            is_deleted=False,
-            conversation__show_in_public_lobby=loopy,
-        ).order_by("-created")[:1]
+        if loopy:
+            return Message.objects.filter(
+                is_deleted=False,
+                conversation__show_in_public_lobby=True,
+            ).order_by("-created")[:1]
+        else:
+            return Message.objects.filter(is_deleted=False).order_by("-created")[:1]
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)

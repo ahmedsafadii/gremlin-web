@@ -13,6 +13,9 @@ class Topic(models.Model):
     title = models.CharField(
         max_length=255, blank=False, null=False, default="", verbose_name=_("Title")
     )
+    is_active = models.BooleanField(
+        blank=False, default=False, null=False, verbose_name=_("Is active")
+    )
     created = models.DateTimeField(
         auto_now_add=True, null=True, verbose_name=_("Created")
     )
@@ -30,9 +33,11 @@ class Topic(models.Model):
 @admin.register(Topic)
 class TopicAdmin(SortableAdminMixin, admin.ModelAdmin):
     search_fields = ["title"]
+    list_filter = ["is_active"]
     list_display = [
         "id",
         "title",
+        "is_active",
         "created",
         "updated",
     ]

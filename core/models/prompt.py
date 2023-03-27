@@ -34,6 +34,7 @@ class Topic(models.Model):
 class TopicAdmin(SortableAdminMixin, admin.ModelAdmin):
     search_fields = ["title"]
     list_filter = ["is_active"]
+    list_editable = ["is_active"]
     list_display = [
         "id",
         "title",

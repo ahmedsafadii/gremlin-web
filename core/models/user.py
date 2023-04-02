@@ -58,7 +58,7 @@ class Device(models.Model):
 class DeviceAdmin(admin.ModelAdmin):
     search_fields = ["device_id"]
     readonly_fields = ["sessions"]
-    list_filter = ["app_version", "platform"]
+    list_filter = ["app_version", "platform", "user__plans__plan"]
     autocomplete_fields = ("user",)
 
     # def username(self, obj):
@@ -79,6 +79,20 @@ class DeviceAdmin(admin.ModelAdmin):
 
     user_email.short_description = "User Email"
 
+    def user_plan(self, obj):
+        if obj.user:
+            plans = (
+                obj.user.plans.filter(is_active=True)
+                .select_related("plans")
+                .order_by("-created")
+                .values_list("plan__title", flat=True)
+            )
+            if plans.exists():
+                return plans.first()
+        return None
+
+    user_plan.short_description = "User Plan"
+
     def num_messages(self, obj):
         if obj.user:
             from core.models import Message
@@ -87,10 +101,34 @@ class DeviceAdmin(admin.ModelAdmin):
         return 0
 
     num_messages.short_description = "Number of messages"
-    num_messages.admin_order_field = "user__conversations__messages"
+
+    @staticmethod
+    def user_last_message_date(obj):
+        from core.models import Message
+
+        last_message = (
+            Message.objects.filter(conversation__user=obj.user)
+            .order_by("-created")
+            .values("created")
+            .first()
+        )
+        return last_message["created"] if last_message else ""
+
+    user_email.short_description = "Last message date"
 
     def get_list_display(self, request):
-        return ["id", "user", "user_email", "created", "sessions", "num_messages"]
+        return [
+            "id",
+            "user",
+            "user_email",
+            "created",
+            "sessions",
+            "num_messages",
+            "user_plan",
+            "user_last_message_date",
+            "app_version",
+            "app_build",
+        ]
 
 
 class UserPlan(models.Model):

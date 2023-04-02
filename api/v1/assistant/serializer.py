@@ -413,16 +413,16 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
 
 class SaveConversationSerializer(serializers.Serializer):  # noqa
     title = serializers.CharField(required=True, allow_blank=False)
-    historyLength = serializers.IntegerField(required=True, min_value=1)
-    showInPublicLobby = serializers.BooleanField(required=True)
-    tokenUsageWarning = serializers.IntegerField(required=True, min_value=200)
+    # historyLength = serializers.IntegerField(required=True, min_value=1)
+    # showInPublicLobby = serializers.BooleanField(required=True)
+    # tokenUsageWarning = serializers.IntegerField(required=True, min_value=200)
 
     def save(self, **kwargs):
         validated_data = self.validated_data
         title = validated_data.get("title")
-        historyLength = validated_data.get("historyLength")
-        showInPublicLobby = validated_data.get("showInPublicLobby")
-        tokenUsageWarning = validated_data.get("tokenUsageWarning")
+        # historyLength = validated_data.get("historyLength")
+        # showInPublicLobby = validated_data.get("showInPublicLobby")
+        # tokenUsageWarning = validated_data.get("tokenUsageWarning")
         conversation = self.context.get("conversation")
         if not conversation:
             raise serializers.ValidationError(
@@ -430,14 +430,14 @@ class SaveConversationSerializer(serializers.Serializer):  # noqa
             )
         conversation.title = title
         conversation.is_custom_title = True
-        conversation.token_usage_warning = tokenUsageWarning
-        conversation.history_length = historyLength
+        # conversation.token_usage_warning = tokenUsageWarning
+        # conversation.history_length = historyLength
+        #
+        # if conversation.messages.count() <= historyLength:
+        #     conversation.is_full_memory = True
+        # else:
+        #     conversation.is_full_memory = False
 
-        if conversation.messages.count() <= historyLength:
-            conversation.is_full_memory = True
-        else:
-            conversation.is_full_memory = False
-
-        conversation.show_in_public_lobby = showInPublicLobby
+        # conversation.show_in_public_lobby = showInPublicLobby
         conversation.save()
         return ConversationSerializer(conversation, many=False).data

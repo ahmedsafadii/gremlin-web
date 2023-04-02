@@ -29,19 +29,19 @@ class Conversation(models.Model):
         max_length=255, blank=False, default="", verbose_name=_("Title")
     )
     token_usage_warning = models.PositiveBigIntegerField(
-        blank=False, default=2000, verbose_name=_("Token usage warning")
+        blank=False, default=4000, verbose_name=_("Token usage warning")
     )
     is_custom_title = models.BooleanField(
         default=False, blank=False, verbose_name=_("Is custom title")
     )
     is_full_memory = models.BooleanField(
-        default=True, blank=False, verbose_name=_("Is full memory")
+        default=False, blank=False, verbose_name=_("Is full memory")
     )
     is_deleted = models.BooleanField(
         default=False, blank=False, verbose_name=_("Is deleted")
     )
     history_length = models.PositiveBigIntegerField(
-        default=1, blank=False, null=False, verbose_name=_("Chat history length")
+        default=15, blank=False, null=False, verbose_name=_("Chat history length")
     )
     show_in_public_lobby = models.BooleanField(
         default=False, null=False, blank=False, verbose_name=_("Is public lobby?")

@@ -61,18 +61,6 @@ class DeviceAdmin(admin.ModelAdmin):
     list_filter = ["app_version", "platform", "user__plans__plan"]
     autocomplete_fields = ("user",)
 
-    # def username(self, obj):
-    #     # Define a custom method to return a value for the new field
-    #     return obj.user.username if obj.user else ""
-    #
-    # username.short_description = "Username"
-
-    def user_email(self, obj):
-        # Access the email field of the related User model
-        return obj.user.email if obj.user else ""
-
-    user_email.short_description = "User Email"
-
     def user_email(self, obj):
         # Access the email field of the related User model
         return obj.user.email if obj.user else ""
@@ -114,7 +102,7 @@ class DeviceAdmin(admin.ModelAdmin):
         )
         return last_message["created"] if last_message else ""
 
-    user_email.short_description = "Last message date"
+    user_last_message_date.short_description = "Last message date"
 
     def get_list_display(self, request):
         return [

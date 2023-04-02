@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
 from utils.helper import get_setting_value
 
 
@@ -57,20 +56,41 @@ class Device(models.Model):
 
 @admin.register(Device)
 class DeviceAdmin(admin.ModelAdmin):
-    autocomplete_fields = ("user",)
     search_fields = ["device_id"]
-    list_display = [
-        "id",
-        "user",
-        "device_id",
-        "sessions",
-        "app_version",
-        "app_build",
-        "first_session",
-        "last_active",
-    ]
     readonly_fields = ["sessions"]
     list_filter = ["app_version", "platform"]
+    autocomplete_fields = ("user",)
+
+    # def username(self, obj):
+    #     # Define a custom method to return a value for the new field
+    #     return obj.user.username if obj.user else ""
+    #
+    # username.short_description = "Username"
+
+    def user_email(self, obj):
+        # Access the email field of the related User model
+        return obj.user.email if obj.user else ""
+
+    user_email.short_description = "User Email"
+
+    def user_email(self, obj):
+        # Access the email field of the related User model
+        return obj.user.email if obj.user else ""
+
+    user_email.short_description = "User Email"
+
+    def num_messages(self, obj):
+        if obj.user:
+            from core.models import Message
+
+            return Message.objects.filter(conversation__user=obj.user).count()
+        return 0
+
+    num_messages.short_description = "Number of messages"
+    num_messages.admin_order_field = "user__conversations__messages"
+
+    def get_list_display(self, request):
+        return ["id", "user", "user_email", "created", "sessions", "num_messages"]
 
 
 class UserPlan(models.Model):

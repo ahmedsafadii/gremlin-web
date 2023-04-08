@@ -331,7 +331,7 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
         prompt = validated_data.get("prompt")
         conversation_id = validated_data.get("conversationId")
         user = self.context["request"].user
-        nickname = UserSerializer().get_nickName(user, is_shortcut=False) or "Gremlin"
+        nickname = UserSerializer().get_nickName(user, is_shortcut=False) or "GenChat"
 
         messages = []
         if wizard_id:
@@ -340,7 +340,7 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
                     {
                         "role": "system",
                         "content": wizard_id.system_prompt.replace(
-                            "[nickname]", nickname
+                            "[NICKNAME]", nickname
                         ),
                     }
                 )
@@ -350,7 +350,7 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
                         "role": "system",
                         "content": get_setting_value(key="wizard_chat_prompt")
                         .replace("[WIZARD]", wizard_id.topic.title)
-                        .replace("[nickname]", nickname),
+                        .replace("[NICKNAME]", nickname),
                     }
                 )
         else:
@@ -358,7 +358,7 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
                 {
                     "role": "system",
                     "content": get_setting_value(key="general_chat_prompt").replace(
-                        "[nickname]", nickname
+                        "[NICKNAME]", nickname
                     ),
                 }
             )
@@ -387,7 +387,7 @@ class CreateMessageSerializer(serializers.Serializer):  # noqa
                         "role": "user",
                         "content": wizard_id.hidden_prompt.replace("[PROMPT]", prompt)
                         .replace("[TARGETLANGUAGE]", "English")
-                        .replace("[nickname]", nickname),
+                        .replace("[NICKNAME]", nickname),
                     }
                 )
             else:

@@ -7,6 +7,7 @@ from api.v1.user.serializer import (
     GoogleLoginSerializer,
     AppleLoginSerializer,
     SubscriptionSerializer,
+    VisitorLoginSerializer,
 )
 from core.models import Conversation, Message, Plan
 from core.models.user import UserTransaction, UserPlan
@@ -27,6 +28,20 @@ class UpdateDeviceView(APIView):
         if serializer.is_valid():
             serializer.save()
             return response(True, None)
+        else:
+            return response(False, None, serializer.errors)
+
+
+class VisitorLoginView(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):  # noqa
+        serializer = VisitorLoginSerializer(
+            data=request.data, context={"request": request}
+        )
+        if serializer.is_valid():
+            user = serializer.save()
+            return response(True, user)
         else:
             return response(False, None, serializer.errors)
 

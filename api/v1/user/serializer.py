@@ -130,6 +130,61 @@ class UserSerializer(serializers.ModelSerializer):
         return UserColorGenerator.generate_user_color(obj.id)
 
 
+class VisitorLoginSerializer(serializers.Serializer):  # noqa
+    deviceId = serializers.CharField(allow_blank=False, required=True)
+
+    @staticmethod
+    def _check_or_retrieve(user_id):
+        username = "d-%s" % user_id
+        if not username or username == "":
+            raise serializers.ValidationError({"auth": _("Device id is missing")})
+        try:
+            user = User.objects.get(username=username)
+            return user
+        except User.DoesNotExist:
+            return False
+
+    @staticmethod
+    def _create_user_as_visitor(user_id, email, first_name, last_name):
+        username = "d-%s" % user_id
+        user_object = User()
+        user_object.is_active = True
+        user_object.username = username
+        user_object.email = email
+        user_object.first_name = first_name
+        user_object.last_name = last_name
+        user_object.save()
+        return user_object
+
+    @staticmethod
+    def add_free_credits(user):
+        if not UserTransaction.objects.filter(user=user, is_free=True).exists():
+            UserTransaction.objects.create_free_transaction(user=user)
+
+    def save(self, **kwargs):
+        device_id = self.validated_data.get("deviceId")
+        user_id = device_id
+        email = device_id + "@chatgx.com"
+        first_name = ""
+        last_name = ""
+
+        user = self._check_or_retrieve(user_id=user_id)
+
+        if not user:
+            user = self._create_user_as_visitor(
+                user_id=user_id, email=email, first_name=first_name, last_name=last_name
+            )
+        user.is_active = True
+        user.save()
+        self.add_free_credits(user=user)
+        Token.objects.update_or_create(user=user)
+
+        if device_id:
+            Device.objects.filter(device_id=device_id).update(user=user)
+
+        return UserSerializer(user).data
+
+
 class GoogleLoginSerializer(serializers.Serializer):  # noqa
     accessToken = serializers.CharField(allow_blank=False, required=True)
     deviceId = serializers.CharField(allow_blank=False, required=True)

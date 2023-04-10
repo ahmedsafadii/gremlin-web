@@ -146,10 +146,11 @@ class GetStartedSerializer(serializers.Serializer):  # noqa
 
 class PromptsSerializer(serializers.ModelSerializer):
     topic = TopicSerializer(many=False)
+    isPro = serializers.ReadOnlyField(source="is_pro")
 
     class Meta:
         model = Prompt
-        fields = ["id", "topic", "title", "content", "placeholder"]
+        fields = ["id", "topic", "title", "content", "placeholder", "isPro"]
 
 
 class PublicLobbySerializer(serializers.ModelSerializer):

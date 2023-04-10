@@ -82,6 +82,9 @@ class Prompt(models.Model):
     is_feature = models.BooleanField(
         blank=False, default=False, null=False, verbose_name=_("Is feature")
     )
+    is_pro = models.BooleanField(
+        blank=False, default=False, null=False, verbose_name=_("Is pro")
+    )
     created = models.DateTimeField(
         auto_now_add=True, null=True, verbose_name=_("Created")
     )
